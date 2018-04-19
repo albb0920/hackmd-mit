@@ -1,0 +1,12 @@
+var path = require('path'),
+    config = require("./config.json");
+
+module.exports = {
+    'config':          __filename,
+    'migrations-path': path.resolve('lib', 'migrations'),
+    'models-path':     path.resolve('lib', 'models'),
+};
+
+["development", "production", "test"].forEach(function(env){
+    module.exports[env] = config[env].db;
+});
