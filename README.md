@@ -1,18 +1,16 @@
-HackMD
+HackMD (MIT-licensed fork)
 ===
-
-[![Standard - JavaScript Style Guide][standardjs-image]][standardjs-url]
-
-[![Join the chat at https://gitter.im/hackmdio/hackmd][gitter-image]][gitter-url]
-[![build status][travis-image]][travis-url]
-[![version][github-version-badge]][github-release-page]
-
 
 HackMD lets you create realtime collaborative markdown notes on all platforms.
 Inspired by Hackpad, with more focus on speed and flexibility.
 Still in the early stage, feel free to fork or contribute to HackMD.
 
 Thanks for using! :smile:
+
+# About this fork
+
+HackMD has [changed their license from MIT to AGPL](https://github.com/hackmdio/hackmd/issues/580),
+this repo aims to maintain a copy of MIT-licensed code.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -66,34 +64,6 @@ Thanks for using! :smile:
 4. Setup environment variables which will overwrite the configs
 5. Build front-end bundle by `npm run build` (use `npm run dev` if you are in development)
 6. Run the server as you like (node, forever, pm2)
-
-## Heroku Deployment
-
-You can quickly setup a sample heroku hackmd application by clicking the button below.
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
-## HackMD by docker container
-[![Try in PWD](https://cdn.rawgit.com/play-with-docker/stacks/cff22438/assets/images/button.png)](http://play-with-docker.com?stack=https://github.com/hackmdio/docker-hackmd/raw/master/docker-compose.yml&stack_name=hackmd)
-
-
-**Debian-based version:**
-
-[![latest](https://images.microbadger.com/badges/version/hackmdio/hackmd.svg)](https://microbadger.com/images/hackmdio/hackmd "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/image/hackmdio/hackmd.svg)](https://microbadger.com/images/hackmdio/hackmd "Get your own image badge on microbadger.com")
-
-
-**Alpine-based version:**
-
-[![latest-alpine](https://images.microbadger.com/badges/version/hackmdio/hackmd:latest-alpine.svg)](https://microbadger.com/images/hackmdio/hackmd:latest-alpine "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/image/hackmdio/hackmd:latest-alpine.svg)](https://microbadger.com/images/hackmdio/hackmd:latest-alpine "Get your own image badge on microbadger.com")
-
-The easiest way to setup HackMD using docker are using the following three commands:
-
-```console
-git clone https://github.com/hackmdio/docker-hackmd.git
-cd docker-hackmd
-docker-compose up
-```
-Read more about it in the [docker repository…](https://github.com/hackmdio/docker-hackmd)
 
 # Upgrade
 
