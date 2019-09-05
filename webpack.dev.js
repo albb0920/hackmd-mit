@@ -1,5 +1,5 @@
-var baseConfig = require('./webpackBaseConfig')
-var ExtractTextPlugin = require('extract-text-webpack-plugin')
+var baseConfig = require('./webpack.common')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 var path = require('path')
 
 module.exports = [Object.assign({}, baseConfig, {
