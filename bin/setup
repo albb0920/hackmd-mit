@@ -8,10 +8,10 @@ if [ -d .git ]; then
   cd "$(git rev-parse --show-toplevel)"
 fi
 
-if ! type npm > /dev/null
+if ! type yarn > /dev/null
 then
   cat << EOF
-npm is not installed, please install Node.js and npm.
+yarn is not installed, please install Node.js and npm.
 Read more on Node.js official website: https://nodejs.org
 Setup will not be run
 EOF
@@ -23,22 +23,16 @@ if [ ! -f config.json ]; then
   cp config.json.example config.json
 fi
 
-if [ ! -f .sequelizerc ]; then
-  cp .sequelizerc.example .sequelizerc
-fi
-
-echo "install npm packages"
-BUILD_ASSETS=false npm install
+echo "install yarn packages"
+BUILD_ASSETS=false yarn install
 
 cat << EOF
-
 
 Edit the following config file to setup hackmd server and client.
 Read more info at https://github.com/hackmdio/hackmd#configuration-files
 
 * config.json           -- server config
 * public/js/config.js   -- client config
-* .sequelizerc          -- db config
 
 EOF
 
