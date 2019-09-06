@@ -69,7 +69,7 @@ if (config.usessl) {
 
 // logger
 app.use(morgan('combined', {
-  'stream': logger
+  stream: logger
 }))
 
 // socket io

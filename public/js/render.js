@@ -10,30 +10,35 @@ var dataUriRegex = /^\s*data:([a-z]+\/[a-z0-9-+.]+(;[a-z-]+=[a-z0-9-]+)?)?(;base
 // custom white list
 var whiteList = filterXSS.whiteList
 // allow ol specify start number
-whiteList['ol'] = ['start']
+whiteList.ol = ['start']
 // allow li specify value number
-whiteList['li'] = ['value']
+whiteList.li = ['value']
 // allow style tag
-whiteList['style'] = []
+whiteList.style = []
 // allow kbd tag
-whiteList['kbd'] = []
+whiteList.kbd = []
 // allow ifram tag with some safe attributes
-whiteList['iframe'] = ['allowfullscreen', 'name', 'referrerpolicy', 'sandbox', 'src', 'width', 'height']
+whiteList.iframe = ['allowfullscreen', 'name', 'referrerpolicy', 'sandbox', 'src', 'width', 'height']
 // allow summary tag
-whiteList['summary'] = []
+whiteList.summary = []
+
+// allow html comment in multiple lines
+var escapeHtmlComment = function (html) {
+  return html
+    .replace(/<(?!!--)/g, '&lt;')
+    .replace(/-->/g, '__HTML_COMMENT_END__')
+    .replace(/>/g, '&gt;')
+    .replace(/__HTML_COMMENT_END__/g, '-->')
+}
 
 var filterXSSOptions = {
   allowCommentTag: true,
   whiteList: whiteList,
-  escapeHtml: function (html) {
-    // allow html comment in multiple lines
-    return html.replace(/<(?!!--)/g, '&lt;').replace(/-->/g, '__HTML_COMMENT_END__').replace(/>/g, '&gt;').replace(/__HTML_COMMENT_END__/g, '-->')
-  },
+  escapeHtml: escapeHtmlComment,
   onIgnoreTag: function (tag, html, options) {
     // allow comment tag
     if (tag === '!--') {
-            // do not filter its attributes
-      return html
+      return escapeHtmlComment(html)
     }
   },
   onTagAttr: function (tag, name, value, isWhiteAttr) {

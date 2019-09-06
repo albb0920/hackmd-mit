@@ -80,8 +80,8 @@ var MediaUploader = function (options) {
   this.file = options.file
   this.contentType = options.contentType || this.file.type || 'application/octet-stream'
   this.metadata = options.metadata || {
-    'title': this.file.name,
-    'mimeType': this.contentType
+    title: this.file.name,
+    mimeType: this.contentType
   }
   this.token = options.token
   this.onComplete = options.onComplete || noop

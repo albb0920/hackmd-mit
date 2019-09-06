@@ -1,11 +1,11 @@
 /* eslint-env browser, jquery */
 /* global serverurl, Reveal, RevealMarkdown */
 
-require('../css/extra.css')
-require('../css/site.css')
-
 import { preventXSS } from './render'
 import { md, updateLastChange, removeDOMEvents, finishView } from './extra'
+
+require('../css/extra.css')
+require('../css/site.css')
 
 const body = preventXSS($('.slides').text())
 
@@ -16,7 +16,7 @@ const url = window.location.pathname
 $('.ui-edit').attr('href', `${url}/edit`)
 
 $(document).ready(() => {
-    // tooltip
+  // tooltip
   $('[data-toggle="tooltip"]').tooltip()
 })
 
@@ -25,7 +25,7 @@ function extend () {
 
   for (const source of arguments) {
     for (const key in source) {
-      if (source.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
         target[key] = source[key]
       }
     }
@@ -107,14 +107,14 @@ window.viewAjaxCallback = () => {
 function renderSlide (event) {
   if (window.location.search.match(/print-pdf/gi)) {
     const slides = $('.slides')
-    let title = document.title
+    const title = document.title
     finishView(slides)
     document.title = title
     Reveal.layout()
   } else {
     const markdown = $(event.currentSlide)
     if (!markdown.attr('data-rendered')) {
-      let title = document.title
+      const title = document.title
       finishView(markdown)
       markdown.attr('data-rendered', 'true')
       document.title = title
@@ -126,7 +126,7 @@ function renderSlide (event) {
 Reveal.addEventListener('ready', event => {
   renderSlide(event)
   const markdown = $(event.currentSlide)
-    // force browser redraw
+  // force browser redraw
   setTimeout(() => {
     markdown.hide().show(0)
   }, 0)

@@ -1,16 +1,7 @@
 /* eslint-env browser, jquery */
-/* global CodeMirror, Cookies, moment, editor, ui, Spinner,
-   modeType, Idle, serverurl, key, gapi, Dropbox, FilePicker
-   ot, MediaUploader, hex2rgb, num_loaded, Visibility */
-
-require('../vendor/showup/showup')
-
-require('../css/index.css')
-require('../css/extra.css')
-require('../css/slide-preview.css')
-require('../css/site.css')
-
-require('highlight.js/styles/github-gist.css')
+/* global CodeMirror, moment
+   serverurl, key, gapi, Dropbox, FilePicker
+   ot, MediaUploader, hex2rgb, Visibility */
 
 import toMarkdown from 'to-markdown'
 
@@ -21,58 +12,62 @@ import _ from 'lodash'
 
 import List from 'list.js'
 
+import Idle from '@hackmd/idle-js'
+
+import { Spinner } from 'spin.js'
+
 import {
-    checkLoginStateChanged,
-    setloginStateChangeEvent
+  checkLoginStateChanged,
+  setloginStateChangeEvent
 } from './lib/common/login'
 
 import {
-    debug,
-    DROPBOX_APP_KEY,
-    GOOGLE_API_KEY,
-    GOOGLE_CLIENT_ID,
-    noteid,
-    noteurl,
-    urlpath,
-    version
+  debug,
+  DROPBOX_APP_KEY,
+  GOOGLE_API_KEY,
+  GOOGLE_CLIENT_ID,
+  noteid,
+  noteurl,
+  urlpath,
+  version
 } from './lib/config'
 
 import {
-    autoLinkify,
-    deduplicatedHeaderId,
-    exportToHTML,
-    exportToRawHTML,
-    removeDOMEvents,
-    finishView,
-    generateToc,
-    isValidURL,
-    md,
-    parseMeta,
-    postProcess,
-    renderFilename,
-    renderTOC,
-    renderTags,
-    renderTitle,
-    scrollToHash,
-    smoothHashScroll,
-    updateLastChange,
-    updateLastChangeUser,
-    updateOwner
+  autoLinkify,
+  deduplicatedHeaderId,
+  exportToHTML,
+  exportToRawHTML,
+  removeDOMEvents,
+  finishView,
+  generateToc,
+  isValidURL,
+  md,
+  parseMeta,
+  postProcess,
+  renderFilename,
+  renderTOC,
+  renderTags,
+  renderTitle,
+  scrollToHash,
+  smoothHashScroll,
+  updateLastChange,
+  updateLastChangeUser,
+  updateOwner
 } from './extra'
 
 import {
-    clearMap,
-    setupSyncAreas,
-    syncScrollToEdit,
-    syncScrollToView
+  clearMap,
+  setupSyncAreas,
+  syncScrollToEdit,
+  syncScrollToView
 } from './lib/syncscroll'
 
 import {
-    writeHistory,
-    deleteServerHistory,
-    getHistory,
-    saveHistory,
-    removeHistory
+  writeHistory,
+  deleteServerHistory,
+  getHistory,
+  saveHistory,
+  removeHistory
 } from './history'
 
 import { preventXSS } from './render'
@@ -82,6 +77,16 @@ import Editor from './lib/editor'
 import getUIElements from './lib/editor/ui-elements'
 import modeType from './lib/modeType'
 import appState from './lib/appState'
+
+require('../vendor/showup/showup')
+
+require('../css/index.css')
+require('../css/extra.css')
+require('../css/slide-preview.css')
+require('../css/site.css')
+
+require('spin.js/spin.css')
+require('highlight.js/styles/github-gist.css')
 
 var defaultTextHeight = 20
 var viewportMargin = 20
@@ -257,7 +262,7 @@ let visibleMD = false
 let visibleLG = false
 const isTouchDevice = 'ontouchstart' in document.documentElement
 let currentStatus = statusType.offline
-let lastInfo = {
+const lastInfo = {
   needRestore: false,
   cursor: null,
   scroll: null,
@@ -283,14 +288,14 @@ let lastInfo = {
 let personalInfo = {}
 let onlineUsers = []
 const fileTypes = {
-  'pl': 'perl',
-  'cgi': 'perl',
-  'js': 'javascript',
-  'php': 'php',
-  'sh': 'bash',
-  'rb': 'ruby',
-  'html': 'html',
-  'py': 'python'
+  pl: 'perl',
+  cgi: 'perl',
+  js: 'javascript',
+  php: 'php',
+  sh: 'bash',
+  rb: 'ruby',
+  html: 'html',
+  py: 'python'
 }
 
 // editor settings
@@ -331,9 +336,7 @@ var opts = {
   left: '50%' // Left position relative to parent
 }
 
-/* eslint-disable no-unused-vars */
-var spinner = new Spinner(opts).spin(ui.spinner[0])
-/* eslint-enable no-unused-vars */
+new Spinner(opts).spin(ui.spinner[0])
 
 // idle
 var idle = new Idle({
@@ -419,7 +422,7 @@ Visibility.change(function (e, state) {
 $(document).ready(function () {
   idle.checkAway()
   checkResponsive()
-    // if in smaller screen, we don't need advanced scrollbar
+  // if in smaller screen, we don't need advanced scrollbar
   var scrollbarStyle
   if (visibleXS) {
     scrollbarStyle = 'native'
@@ -438,12 +441,12 @@ $(document).ready(function () {
 
     /* bind events */
     $(document)
-    .on('focus', 'textarea, input', function () {
-      $body.addClass('fixfixed')
-    })
-    .on('blur', 'textarea, input', function () {
-      $body.removeClass('fixfixed')
-    })
+      .on('focus', 'textarea, input', function () {
+        $body.addClass('fixfixed')
+      })
+      .on('blur', 'textarea, input', function () {
+        $body.removeClass('fixfixed')
+      })
   }
   // showup
   $().showUp('.navbar', {
@@ -559,7 +562,7 @@ var previousFocusOnEditor = null
 
 function checkEditorStyle () {
   var desireHeight = editorInstance.statusBar ? (ui.area.edit.height() - editorInstance.statusBar.outerHeight()) : ui.area.edit.height()
-    // set editor height and min height based on scrollbar style and mode
+  // set editor height and min height based on scrollbar style and mode
   var scrollbarStyle = editor.getOption('scrollbarStyle')
   if (scrollbarStyle === 'overlay' || appState.currentMode === modeType.both) {
     ui.area.codemirrorScroll.css('height', desireHeight + 'px')
@@ -658,14 +661,14 @@ function checkEditorScrollbarInner () {
 }
 
 function checkTocStyle () {
-    // toc right
+  // toc right
   var paddingRight = parseFloat(ui.area.markdown.css('padding-right'))
   var right = ($(window).width() - (ui.area.markdown.offset().left + ui.area.markdown.outerWidth() - paddingRight))
   ui.toc.toc.css('right', right + 'px')
-    // affix toc left
+  // affix toc left
   var newbool
   var rightMargin = (ui.area.markdown.parent().outerWidth() - ui.area.markdown.outerWidth()) / 2
-    // for ipad or wider device
+  // for ipad or wider device
   if (rightMargin >= 133) {
     newbool = true
     var affixLeftMargin = (ui.toc.affix.outerWidth() - ui.toc.affix.width()) / 2
@@ -752,7 +755,7 @@ function toggleMode () {
 var lastMode = null
 
 function changeMode (type) {
-    // lock navbar to prevent it hide after changeMode
+  // lock navbar to prevent it hide after changeMode
   lockNavbar()
   saveInfo()
   if (type) {
@@ -809,7 +812,7 @@ function changeMode (type) {
   } else {
     $(document.body).css('background-color', ui.area.codemirror.css('background-color'))
   }
-    // check resizable editor style
+  // check resizable editor style
   if (appState.currentMode === modeType.both) {
     if (lastEditorWidth > 0) {
       ui.area.edit.css('width', lastEditorWidth + 'px')
@@ -887,13 +890,13 @@ function showMessageModal (title, header, href, text, success) {
 // check if dropbox app key is set and load scripts
 if (DROPBOX_APP_KEY) {
   $('<script>')
-        .attr('type', 'text/javascript')
-        .attr('src', 'https://www.dropbox.com/static/api/2/dropins.js')
-        .attr('id', 'dropboxjs')
-        .attr('data-app-key', DROPBOX_APP_KEY)
-        .prop('async', true)
-        .prop('defer', true)
-        .appendTo('body')
+    .attr('type', 'text/javascript')
+    .attr('src', 'https://www.dropbox.com/static/api/2/dropins.js')
+    .attr('id', 'dropboxjs')
+    .attr('data-app-key', DROPBOX_APP_KEY)
+    .prop('async', true)
+    .prop('defer', true)
+    .appendTo('body')
 } else {
   ui.toolbar.import.dropbox.hide()
   ui.toolbar.export.dropbox.hide()
@@ -902,11 +905,11 @@ if (DROPBOX_APP_KEY) {
 // check if google api key and client id are set and load scripts
 if (GOOGLE_API_KEY && GOOGLE_CLIENT_ID) {
   $('<script>')
-        .attr('type', 'text/javascript')
-        .attr('src', 'https://www.google.com/jsapi?callback=onGoogleAPILoaded')
-        .prop('async', true)
-        .prop('defer', true)
-        .appendTo('body')
+    .attr('type', 'text/javascript')
+    .attr('src', 'https://www.google.com/jsapi?callback=onGoogleAPILoaded')
+    .prop('async', true)
+    .prop('defer', true)
+    .appendTo('body')
 } else {
   ui.toolbar.import.googleDrive.hide()
   ui.toolbar.export.googleDrive.hide()
@@ -914,11 +917,11 @@ if (GOOGLE_API_KEY && GOOGLE_CLIENT_ID) {
 
 function onGoogleAPILoaded () {
   $('<script>')
-        .attr('type', 'text/javascript')
-        .attr('src', 'https://apis.google.com/js/client:plusone.js?onload=onGoogleClientLoaded')
-        .prop('async', true)
-        .prop('defer', true)
-        .appendTo('body')
+    .attr('type', 'text/javascript')
+    .attr('src', 'https://apis.google.com/js/client:plusone.js?onload=onGoogleClientLoaded')
+    .prop('async', true)
+    .prop('defer', true)
+    .appendTo('body')
 }
 window.onGoogleAPILoaded = onGoogleAPILoaded
 
@@ -960,8 +963,8 @@ ui.toolbar.export.dropbox.click(function () {
   var options = {
     files: [
       {
-        'url': noteurl + '/download',
-        'filename': filename
+        url: noteurl + '/download',
+        filename: filename
       }
     ],
     error: function (errorMessage) {
@@ -996,9 +999,9 @@ function uploadToGoogleDrive (accessToken) {
 function googleApiAuth (immediate, callback) {
   gapi.auth.authorize(
     {
-      'client_id': GOOGLE_CLIENT_ID,
-      'scope': 'https://www.googleapis.com/auth/drive.file',
-      'immediate': immediate
+      client_id: GOOGLE_CLIENT_ID,
+      scope: 'https://www.googleapis.com/auth/drive.file',
+      immediate: immediate
     }, callback || function () { })
 }
 function onGoogleClientLoaded () {
@@ -1023,34 +1026,34 @@ ui.toolbar.export.gist.attr('href', noteurl + '/gist')
 ui.toolbar.export.snippet.click(function () {
   ui.spinner.show()
   $.get(serverurl + '/auth/gitlab/callback/' + noteid + '/projects')
-        .done(function (data) {
-          $('#snippetExportModalAccessToken').val(data.accesstoken)
-          $('#snippetExportModalBaseURL').val(data.baseURL)
-          $('#snippetExportModalLoading').hide()
-          $('#snippetExportModal').modal('toggle')
-          $('#snippetExportModalProjects').find('option').remove().end().append('<option value="init" selected="selected" disabled="disabled">Select From Available Projects</option>')
-          if (data.projects) {
-            data.projects.sort(function (a, b) {
-              return (a.path_with_namespace < b.path_with_namespace) ? -1 : ((a.path_with_namespace > b.path_with_namespace) ? 1 : 0)
-            })
-            data.projects.forEach(function (project) {
-              if (!project.snippets_enabled ||
+    .done(function (data) {
+      $('#snippetExportModalAccessToken').val(data.accesstoken)
+      $('#snippetExportModalBaseURL').val(data.baseURL)
+      $('#snippetExportModalLoading').hide()
+      $('#snippetExportModal').modal('toggle')
+      $('#snippetExportModalProjects').find('option').remove().end().append('<option value="init" selected="selected" disabled="disabled">Select From Available Projects</option>')
+      if (data.projects) {
+        data.projects.sort(function (a, b) {
+          return (a.path_with_namespace < b.path_with_namespace) ? -1 : ((a.path_with_namespace > b.path_with_namespace) ? 1 : 0)
+        })
+        data.projects.forEach(function (project) {
+          if (!project.snippets_enabled ||
                         (project.permissions.project_access === null && project.permissions.group_access === null) ||
                         (project.permissions.project_access !== null && project.permissions.project_access.access_level < 20)) {
-                return
-              }
-              $('<option>').val(project.id).text(project.path_with_namespace).appendTo('#snippetExportModalProjects')
-            })
-            $('#snippetExportModalProjects').prop('disabled', false)
+            return
           }
-          $('#snippetExportModalLoading').hide()
+          $('<option>').val(project.id).text(project.path_with_namespace).appendTo('#snippetExportModalProjects')
         })
-        .fail(function (data) {
-          showMessageModal('<i class="fa fa-gitlab"></i> Import from Snippet', 'Unable to fetch gitlab parameters :(', '', '', false)
-        })
-        .always(function () {
-          ui.spinner.hide()
-        })
+        $('#snippetExportModalProjects').prop('disabled', false)
+      }
+      $('#snippetExportModalLoading').hide()
+    })
+    .fail(function (data) {
+      showMessageModal('<i class="fa fa-gitlab"></i> Import from Snippet', 'Unable to fetch gitlab parameters :(', '', '', false)
+    })
+    .always(function () {
+      ui.spinner.hide()
+    })
 })
 // import from dropbox
 ui.toolbar.import.dropbox.click(function () {
@@ -1069,7 +1072,7 @@ ui.toolbar.import.dropbox.click(function () {
 // import from google drive
 function buildImportFromGoogleDrive () {
   /* eslint-disable no-unused-vars */
-  let picker = new FilePicker({
+  const picker = new FilePicker({
     apiKey: GOOGLE_API_KEY,
     clientId: GOOGLE_CLIENT_ID,
     buttonEl: ui.toolbar.import.googleDrive,
@@ -1100,46 +1103,46 @@ function buildImportFromGoogleDrive () {
 }
 // import from gist
 ui.toolbar.import.gist.click(function () {
-    // na
+  // na
 })
 // import from snippet
 ui.toolbar.import.snippet.click(function () {
   ui.spinner.show()
   $.get(serverurl + '/auth/gitlab/callback/' + noteid + '/projects')
-        .done(function (data) {
-          $('#snippetImportModalAccessToken').val(data.accesstoken)
-          $('#snippetImportModalBaseURL').val(data.baseURL)
-          $('#snippetImportModalContent').prop('disabled', false)
-          $('#snippetImportModalConfirm').prop('disabled', false)
-          $('#snippetImportModalLoading').hide()
-          $('#snippetImportModal').modal('toggle')
-          $('#snippetImportModalProjects').find('option').remove().end().append('<option value="init" selected="selected" disabled="disabled">Select From Available Projects</option>')
-          if (data.projects) {
-            data.projects.sort(function (a, b) {
-              return (a.path_with_namespace < b.path_with_namespace) ? -1 : ((a.path_with_namespace > b.path_with_namespace) ? 1 : 0)
-            })
-            data.projects.forEach(function (project) {
-              if (!project.snippets_enabled ||
+    .done(function (data) {
+      $('#snippetImportModalAccessToken').val(data.accesstoken)
+      $('#snippetImportModalBaseURL').val(data.baseURL)
+      $('#snippetImportModalContent').prop('disabled', false)
+      $('#snippetImportModalConfirm').prop('disabled', false)
+      $('#snippetImportModalLoading').hide()
+      $('#snippetImportModal').modal('toggle')
+      $('#snippetImportModalProjects').find('option').remove().end().append('<option value="init" selected="selected" disabled="disabled">Select From Available Projects</option>')
+      if (data.projects) {
+        data.projects.sort(function (a, b) {
+          return (a.path_with_namespace < b.path_with_namespace) ? -1 : ((a.path_with_namespace > b.path_with_namespace) ? 1 : 0)
+        })
+        data.projects.forEach(function (project) {
+          if (!project.snippets_enabled ||
                         (project.permissions.project_access === null && project.permissions.group_access === null) ||
                         (project.permissions.project_access !== null && project.permissions.project_access.access_level < 20)) {
-                return
-              }
-              $('<option>').val(project.id).text(project.path_with_namespace).appendTo('#snippetImportModalProjects')
-            })
-            $('#snippetImportModalProjects').prop('disabled', false)
+            return
           }
-          $('#snippetImportModalLoading').hide()
+          $('<option>').val(project.id).text(project.path_with_namespace).appendTo('#snippetImportModalProjects')
         })
-        .fail(function (data) {
-          showMessageModal('<i class="fa fa-gitlab"></i> Import from Snippet', 'Unable to fetch gitlab parameters :(', '', '', false)
-        })
-        .always(function () {
-          ui.spinner.hide()
-        })
+        $('#snippetImportModalProjects').prop('disabled', false)
+      }
+      $('#snippetImportModalLoading').hide()
+    })
+    .fail(function (data) {
+      showMessageModal('<i class="fa fa-gitlab"></i> Import from Snippet', 'Unable to fetch gitlab parameters :(', '', '', false)
+    })
+    .always(function () {
+      ui.spinner.hide()
+    })
 })
 // import from clipboard
 ui.toolbar.import.clipboard.click(function () {
-    // na
+  // na
 })
 // upload image
 ui.toolbar.uploadImage.bind('change', function (e) {
@@ -1169,18 +1172,18 @@ var revision = null
 var revisionTime = null
 ui.modal.revision.on('show.bs.modal', function (e) {
   $.get(noteurl + '/revision')
-        .done(function (data) {
-          parseRevisions(data.revision)
-          initRevisionViewer()
-        })
-        .fail(function (err) {
-          if (debug) {
-            console.log(err)
-          }
-        })
-        .always(function () {
-            // na
-        })
+    .done(function (data) {
+      parseRevisions(data.revision)
+      initRevisionViewer()
+    })
+    .fail(function (err) {
+      if (debug) {
+        console.log(err)
+      }
+    })
+    .always(function () {
+      // na
+    })
 })
 function checkRevisionViewer () {
   if (revisionViewer) {
@@ -1223,74 +1226,74 @@ function parseRevisions (_revisions) {
 function selectRevision (time) {
   if (time === revisionTime) return
   $.get(noteurl + '/revision/' + time)
-        .done(function (data) {
-          revision = data
-          revisionTime = time
-          var lastScrollInfo = revisionViewer.getScrollInfo()
-          revisionList.children().removeClass('active')
-          revisionList.find('[data-revision-time="' + time + '"]').addClass('active')
-          var content = revision.content
-          revisionViewer.setValue(content)
-          revisionViewer.scrollTo(null, lastScrollInfo.top)
-          revisionInsert = []
-          revisionDelete = []
-            // mark the text which have been insert or delete
-          if (revision.patch.length > 0) {
-            var bias = 0
-            for (var j = 0; j < revision.patch.length; j++) {
-              var patch = revision.patch[j]
-              var currIndex = patch.start1 + bias
-              for (var i = 0; i < patch.diffs.length; i++) {
-                var diff = patch.diffs[i]
-                // ignore if diff only contains line breaks
-                if ((diff[1].match(/\n/g) || []).length === diff[1].length) continue
-                var prePos
-                var postPos
-                switch (diff[0]) {
-                  case 0: // retain
-                    currIndex += diff[1].length
-                    break
-                  case 1: // insert
-                    prePos = revisionViewer.posFromIndex(currIndex)
-                    postPos = revisionViewer.posFromIndex(currIndex + diff[1].length)
-                    revisionInsert.push({
-                      from: prePos,
-                      to: postPos
-                    })
-                    revisionViewer.markText(prePos, postPos, {
-                      css: 'background-color: rgba(230,255,230,0.7); text-decoration: underline;'
-                    })
-                    currIndex += diff[1].length
-                    break
-                  case -1: // delete
-                    prePos = revisionViewer.posFromIndex(currIndex)
-                    revisionViewer.replaceRange(diff[1], prePos)
-                    postPos = revisionViewer.posFromIndex(currIndex + diff[1].length)
-                    revisionDelete.push({
-                      from: prePos,
-                      to: postPos
-                    })
-                    revisionViewer.markText(prePos, postPos, {
-                      css: 'background-color: rgba(255,230,230,0.7); text-decoration: line-through;'
-                    })
-                    bias += diff[1].length
-                    currIndex += diff[1].length
-                    break
-                }
-              }
+    .done(function (data) {
+      revision = data
+      revisionTime = time
+      var lastScrollInfo = revisionViewer.getScrollInfo()
+      revisionList.children().removeClass('active')
+      revisionList.find('[data-revision-time="' + time + '"]').addClass('active')
+      var content = revision.content
+      revisionViewer.setValue(content)
+      revisionViewer.scrollTo(null, lastScrollInfo.top)
+      revisionInsert = []
+      revisionDelete = []
+      // mark the text which have been insert or delete
+      if (revision.patch.length > 0) {
+        var bias = 0
+        for (var j = 0; j < revision.patch.length; j++) {
+          var patch = revision.patch[j]
+          var currIndex = patch.start1 + bias
+          for (var i = 0; i < patch.diffs.length; i++) {
+            var diff = patch.diffs[i]
+            // ignore if diff only contains line breaks
+            if ((diff[1].match(/\n/g) || []).length === diff[1].length) continue
+            var prePos
+            var postPos
+            switch (diff[0]) {
+              case 0: // retain
+                currIndex += diff[1].length
+                break
+              case 1: // insert
+                prePos = revisionViewer.posFromIndex(currIndex)
+                postPos = revisionViewer.posFromIndex(currIndex + diff[1].length)
+                revisionInsert.push({
+                  from: prePos,
+                  to: postPos
+                })
+                revisionViewer.markText(prePos, postPos, {
+                  css: 'background-color: rgba(230,255,230,0.7); text-decoration: underline;'
+                })
+                currIndex += diff[1].length
+                break
+              case -1: // delete
+                prePos = revisionViewer.posFromIndex(currIndex)
+                revisionViewer.replaceRange(diff[1], prePos)
+                postPos = revisionViewer.posFromIndex(currIndex + diff[1].length)
+                revisionDelete.push({
+                  from: prePos,
+                  to: postPos
+                })
+                revisionViewer.markText(prePos, postPos, {
+                  css: 'background-color: rgba(255,230,230,0.7); text-decoration: line-through;'
+                })
+                bias += diff[1].length
+                currIndex += diff[1].length
+                break
             }
           }
-          revisionInsertAnnotation.update(revisionInsert)
-          revisionDeleteAnnotation.update(revisionDelete)
-        })
-        .fail(function (err) {
-          if (debug) {
-            console.log(err)
-          }
-        })
-        .always(function () {
-            // na
-        })
+        }
+      }
+      revisionInsertAnnotation.update(revisionInsert)
+      revisionDeleteAnnotation.update(revisionDelete)
+    })
+    .fail(function (err) {
+      if (debug) {
+        console.log(err)
+      }
+    })
+    .always(function () {
+      // na
+    })
 }
 function initRevisionViewer () {
   if (revisionViewer) return
@@ -1335,22 +1338,22 @@ ui.modal.snippetImportProjects.change(function () {
   $('#snippetImportModalLoading').show()
   $('#snippetImportModalContent').val('/projects/' + project)
   $.get(baseURL + '/api/v3/projects/' + project + '/snippets?access_token=' + accesstoken)
-        .done(function (data) {
-          $('#snippetImportModalSnippets').find('option').remove().end().append('<option value="init" selected="selected" disabled="disabled">Select From Available Snippets</option>')
-          data.forEach(function (snippet) {
-            $('<option>').val(snippet.id).text(snippet.title).appendTo($('#snippetImportModalSnippets'))
-          })
-          $('#snippetImportModalLoading').hide()
-          $('#snippetImportModalSnippets').prop('disabled', false)
-        })
-        .fail(function (err) {
-          if (debug) {
-            console.log(err)
-          }
-        })
-        .always(function () {
-            // na
-        })
+    .done(function (data) {
+      $('#snippetImportModalSnippets').find('option').remove().end().append('<option value="init" selected="selected" disabled="disabled">Select From Available Snippets</option>')
+      data.forEach(function (snippet) {
+        $('<option>').val(snippet.id).text(snippet.title).appendTo($('#snippetImportModalSnippets'))
+      })
+      $('#snippetImportModalLoading').hide()
+      $('#snippetImportModalSnippets').prop('disabled', false)
+    })
+    .fail(function (err) {
+      if (debug) {
+        console.log(err)
+      }
+    })
+    .always(function () {
+      // na
+    })
 })
 // snippet snippets
 ui.modal.snippetImportSnippets.change(function () {
@@ -1410,8 +1413,8 @@ function generateScrollspy () {
     ui.toc.affix.hide()
     ui.toc.toc.show()
   }
-    // $(document.body).scroll();
-    // ui.area.view.scroll();
+  // $(document.body).scroll();
+  // ui.area.view.scroll();
 }
 
 function updateScrollspy () {
@@ -1421,10 +1424,10 @@ function updateScrollspy () {
     headerMap.push($(headers[i]).offset().top - parseInt($(headers[i]).css('margin-top')))
   }
   applyScrollspyActive($(window).scrollTop(), headerMap, headers,
-        $('.scrollspy-body'), 0)
+    $('.scrollspy-body'), 0)
   var offset = ui.area.view.scrollTop() - ui.area.view.offset().top
   applyScrollspyActive(ui.area.view.scrollTop(), headerMap, headers,
-        $('.scrollspy-view'), offset - 10)
+    $('.scrollspy-view'), offset - 10)
 }
 
 function applyScrollspyActive (top, headerMap, headers, target, offset) {
@@ -1480,26 +1483,26 @@ $('#gistImportModalConfirm').click(function () {
     } else {
       ui.spinner.show()
       $.get('https://api.github.com/gists/' + window.url('-1', gisturl))
-                .done(function (data) {
-                  if (data.files) {
-                    var contents = ''
-                    Object.keys(data.files).forEach(function (key) {
-                      contents += key
-                      contents += '\n---\n'
-                      contents += data.files[key].content
-                      contents += '\n\n'
-                    })
-                    replaceAll(contents)
-                  } else {
-                    showMessageModal('<i class="fa fa-github"></i> Import from Gist', 'Unable to fetch gist files :(', '', '', false)
-                  }
-                })
-                .fail(function (data) {
-                  showMessageModal('<i class="fa fa-github"></i> Import from Gist', 'Not a valid Gist URL :(', '', JSON.stringify(data), false)
-                })
-                .always(function () {
-                  ui.spinner.hide()
-                })
+        .done(function (data) {
+          if (data.files) {
+            var contents = ''
+            Object.keys(data.files).forEach(function (key) {
+              contents += key
+              contents += '\n---\n'
+              contents += data.files[key].content
+              contents += '\n\n'
+            })
+            replaceAll(contents)
+          } else {
+            showMessageModal('<i class="fa fa-github"></i> Import from Gist', 'Unable to fetch gist files :(', '', '', false)
+          }
+        })
+        .fail(function (data) {
+          showMessageModal('<i class="fa fa-github"></i> Import from Gist', 'Not a valid Gist URL :(', '', JSON.stringify(data), false)
+        })
+        .always(function () {
+          ui.spinner.hide()
+        })
     }
   }
 })
@@ -1523,34 +1526,34 @@ $('#snippetImportModalConfirm').click(function () {
     var accessToken = '?access_token=' + $('#snippetImportModalAccessToken').val()
     var fullURL = $('#snippetImportModalBaseURL').val() + '/api/v3' + snippeturl
     $.get(fullURL + accessToken)
-            .done(function (data) {
-              var content = '# ' + (data.title || 'Snippet Import')
-              var fileInfo = data.file_name.split('.')
-              fileInfo[1] = (fileInfo[1]) ? fileInfo[1] : 'md'
-              $.get(fullURL + '/raw' + accessToken)
-                    .done(function (raw) {
-                      if (raw) {
-                        content += '\n\n'
-                        if (fileInfo[1] !== 'md') {
-                          content += '```' + fileTypes[fileInfo[1]] + '\n'
-                        }
-                        content += raw
-                        if (fileInfo[1] !== 'md') {
-                          content += '\n```'
-                        }
-                        replaceAll(content)
-                      }
-                    })
-                    .fail(function (data) {
-                      showMessageModal('<i class="fa fa-gitlab"></i> Import from Snippet', 'Not a valid Snippet URL :(', '', JSON.stringify(data), false)
-                    })
-                    .always(function () {
-                      ui.spinner.hide()
-                    })
-            })
-            .fail(function (data) {
-              showMessageModal('<i class="fa fa-gitlab"></i> Import from Snippet', 'Not a valid Snippet URL :(', '', JSON.stringify(data), false)
-            })
+      .done(function (data) {
+        var content = '# ' + (data.title || 'Snippet Import')
+        var fileInfo = data.file_name.split('.')
+        fileInfo[1] = (fileInfo[1]) ? fileInfo[1] : 'md'
+        $.get(fullURL + '/raw' + accessToken)
+          .done(function (raw) {
+            if (raw) {
+              content += '\n\n'
+              if (fileInfo[1] !== 'md') {
+                content += '```' + fileTypes[fileInfo[1]] + '\n'
+              }
+              content += raw
+              if (fileInfo[1] !== 'md') {
+                content += '\n```'
+              }
+              replaceAll(content)
+            }
+          })
+          .fail(function (data) {
+            showMessageModal('<i class="fa fa-gitlab"></i> Import from Snippet', 'Not a valid Snippet URL :(', '', JSON.stringify(data), false)
+          })
+          .always(function () {
+            ui.spinner.hide()
+          })
+      })
+      .fail(function (data) {
+        showMessageModal('<i class="fa fa-gitlab"></i> Import from Snippet', 'Not a valid Snippet URL :(', '', JSON.stringify(data), false)
+      })
   }
 })
 
@@ -1568,15 +1571,15 @@ $('#snippetExportModalConfirm').click(function () {
   $('#snippetExportModalLoading').show()
   var fullURL = baseURL + '/api/v3/projects/' + $('#snippetExportModalProjects').val() + '/snippets?access_token=' + accesstoken
   $.post(fullURL
-        , data
-        , function (ret) {
-          $('#snippetExportModalLoading').hide()
-          $('#snippetExportModal').modal('hide')
-          var redirect = baseURL + '/' + $("#snippetExportModalProjects option[value='" + $('#snippetExportModalProjects').val() + "']").text() + '/snippets/' + ret.id
-          showMessageModal('<i class="fa fa-gitlab"></i> Export to Snippet', 'Export Successful!', redirect, 'View Snippet Here', true)
-        }
-        , 'json'
-    )
+    , data
+    , function (ret) {
+      $('#snippetExportModalLoading').hide()
+      $('#snippetExportModal').modal('hide')
+      var redirect = baseURL + '/' + $("#snippetExportModalProjects option[value='" + $('#snippetExportModalProjects').val() + "']").text() + '/snippets/' + ret.id
+      showMessageModal('<i class="fa fa-gitlab"></i> Export to Snippet', 'Export Successful!', redirect, 'View Snippet Here', true)
+    }
+    , 'json'
+  )
 })
 
 function parseToEditor (data) {
@@ -1595,7 +1598,7 @@ function replaceAll (data) {
 }
 
 function importFromUrl (url) {
-    // console.log(url);
+  // console.log(url);
   if (!url) return
   if (!isValidURL(url)) {
     showMessageModal('<i class="fa fa-cloud-download"></i> Import from URL', 'Not a valid URL :(', '', '', false)
@@ -1808,7 +1811,7 @@ socket.on('disconnect', function (data) {
   }
 })
 socket.on('reconnect', function (data) {
-    // sync back any change in offline
+  // sync back any change in offline
   emitUserStatus(true)
   cursorActivity(editor)
   socket.emit('online users')
@@ -1816,7 +1819,7 @@ socket.on('reconnect', function (data) {
 socket.on('connect', function (data) {
   clearInterval(retryTimer)
   retryTimer = null
-  personalInfo['id'] = socket.id
+  personalInfo.id = socket.id
   showStatus(statusType.connected)
   socket.emit('version')
 })
@@ -1835,30 +1838,30 @@ var authorship = []
 var authorMarks = {} // temp variable
 var addTextMarkers = [] // temp variable
 function updateInfo (data) {
-    // console.log(data);
-  if (data.hasOwnProperty('createtime') && window.createtime !== data.createtime) {
+  // console.log(data);
+  if (Object.hasOwnProperty.call(data, 'createtime') && window.createtime !== data.createtime) {
     window.createtime = data.createtime
     updateLastChange()
   }
-  if (data.hasOwnProperty('updatetime') && window.lastchangetime !== data.updatetime) {
+  if (Object.hasOwnProperty.call(data, 'updatetime') && window.lastchangetime !== data.updatetime) {
     window.lastchangetime = data.updatetime
     updateLastChange()
   }
-  if (data.hasOwnProperty('owner') && window.owner !== data.owner) {
+  if (Object.hasOwnProperty.call(data, 'owner') && window.owner !== data.owner) {
     window.owner = data.owner
     window.ownerprofile = data.ownerprofile
     updateOwner()
   }
-  if (data.hasOwnProperty('lastchangeuser') && window.lastchangeuser !== data.lastchangeuser) {
+  if (Object.hasOwnProperty.call(data, 'lastchangeuser') && window.lastchangeuser !== data.lastchangeuser) {
     window.lastchangeuser = data.lastchangeuser
     window.lastchangeuserprofile = data.lastchangeuserprofile
     updateLastChangeUser()
     updateOwner()
   }
-  if (data.hasOwnProperty('authors') && authors !== data.authors) {
+  if (Object.hasOwnProperty.call(data, 'authors') && authors !== data.authors) {
     authors = data.authors
   }
-  if (data.hasOwnProperty('authorship') && authorship !== data.authorship) {
+  if (Object.hasOwnProperty.call(data, 'authorship') && authorship !== data.authorship) {
     authorship = data.authorship
     updateAuthorship()
   }
@@ -1898,12 +1901,12 @@ var addStyleRule = (function () {
   }
 }())
 function updateAuthorshipInner () {
-    // ignore when ot not synced yet
+  // ignore when ot not synced yet
   if (havePendingOperation()) return
   authorMarks = {}
   for (let i = 0; i < authorship.length; i++) {
     var atom = authorship[i]
-    let author = authors[atom[0]]
+    const author = authors[atom[0]]
     if (author) {
       var prePos = editor.posFromIndex(atom[1])
       var preLine = editor.getLine(prePos.line)
@@ -1921,7 +1924,7 @@ function updateAuthorshipInner () {
         if (prePos.ch === preLine.length) {
           startLine++
         } else if (prePos.ch !== 0) {
-          let mark = initMarkAndCheckGutter(authorMarks[prePos.line], author, atom[3])
+          const mark = initMarkAndCheckGutter(authorMarks[prePos.line], author, atom[3])
           var _postPos = {
             line: prePos.line,
             ch: preLine.length
@@ -1938,7 +1941,7 @@ function updateAuthorshipInner () {
         if (postPos.ch === 0) {
           endLine--
         } else if (postPos.ch !== postLine.length) {
-          let mark = initMarkAndCheckGutter(authorMarks[postPos.line], author, atom[3])
+          const mark = initMarkAndCheckGutter(authorMarks[postPos.line], author, atom[3])
           var _prePos = {
             line: postPos.line,
             ch: 0
@@ -1958,7 +1961,7 @@ function updateAuthorshipInner () {
           }
         }
       } else {
-        let mark = initMarkAndCheckGutter(authorMarks[prePos.line], author, atom[3])
+        const mark = initMarkAndCheckGutter(authorMarks[prePos.line], author, atom[3])
         if (JSON.stringify(prePos) !== JSON.stringify(postPos)) {
           mark.textmarkers.push({
             userid: author.userid,
@@ -1971,15 +1974,16 @@ function updateAuthorshipInner () {
   }
   addTextMarkers = []
   editor.eachLine(iterateLine)
-  var allTextMarks = editor.getAllMarks()
+  const allTextMarks = editor.getAllMarks()
   for (let i = 0; i < allTextMarks.length; i++) {
-    let _textMarker = allTextMarks[i]
-    var pos = _textMarker.find()
-    var found = false
+    const _textMarker = allTextMarks[i]
+    const pos = _textMarker.find()
+    let found = false
+
     for (let j = 0; j < addTextMarkers.length; j++) {
-      let textMarker = addTextMarkers[j]
-      let author = authors[textMarker.userid]
-      let className = 'authorship-inline-' + author.color.substr(1)
+      const textMarker = addTextMarkers[j]
+      const author = authors[textMarker.userid]
+      const className = 'authorship-inline-' + author.color.substr(1)
       var obj = {
         from: textMarker.pos[0],
         to: textMarker.pos[1]
@@ -1997,12 +2001,12 @@ function updateAuthorshipInner () {
     }
   }
   for (let i = 0; i < addTextMarkers.length; i++) {
-    let textMarker = addTextMarkers[i]
-    let author = authors[textMarker.userid]
+    const textMarker = addTextMarkers[i]
+    const author = authors[textMarker.userid]
     const rgbcolor = hex2rgb(author.color)
     const colorString = `rgba(${rgbcolor.red},${rgbcolor.green},${rgbcolor.blue},0.7)`
     const styleString = `background-image: linear-gradient(to top, ${colorString} 1px, transparent 1px);`
-    let className = `authorship-inline-${author.color.substr(1)}`
+    const className = `authorship-inline-${author.color.substr(1)}`
     const rule = `.${className} { ${styleString} }`
     addStyleRule(rule)
     editor.markText(textMarker.pos[0], textMarker.pos[1], {
@@ -2012,11 +2016,11 @@ function updateAuthorshipInner () {
   }
 }
 function iterateLine (line) {
-  var lineNumber = line.lineNo()
-  var currMark = authorMarks[lineNumber]
-  var author = currMark ? authors[currMark.gutter.userid] : null
+  const lineNumber = line.lineNo()
+  const currMark = authorMarks[lineNumber]
+  const author = currMark ? authors[currMark.gutter.userid] : null
   if (currMark && author) {
-    let className = 'authorship-gutter-' + author.color.substr(1)
+    const className = 'authorship-gutter-' + author.color.substr(1)
     const gutters = line.gutterMarkers
     if (!gutters || !gutters['authorship-gutters'] ||
         !gutters['authorship-gutters'].className ||
@@ -2024,7 +2028,7 @@ function iterateLine (line) {
       const styleString = `border-left: 3px solid ${author.color}; height: ${defaultTextHeight}px; margin-left: 3px;`
       const rule = `.${className} { ${styleString} }`
       addStyleRule(rule)
-      var gutter = $('<div>', {
+      const gutter = $('<div>', {
         class: 'authorship-gutter ' + className,
         title: author.name
       })
@@ -2034,8 +2038,8 @@ function iterateLine (line) {
     editor.setGutterMarker(line, 'authorship-gutters', null)
   }
   if (currMark && currMark.textmarkers.length > 0) {
-    for (var i = 0; i < currMark.textmarkers.length; i++) {
-      let textMarker = currMark.textmarkers[i]
+    for (let i = 0; i < currMark.textmarkers.length; i++) {
+      const textMarker = currMark.textmarkers[i]
       if (textMarker.userid !== currMark.gutter.userid) {
         addTextMarkers.push(textMarker)
       }
@@ -2046,12 +2050,12 @@ editorInstance.on('update', function () {
   $('.authorship-gutter:not([data-original-title])').tooltip({
     container: '.CodeMirror-lines',
     placement: 'right',
-    delay: { 'show': 500, 'hide': 100 }
+    delay: { show: 500, hide: 100 }
   })
   $('.authorship-inline:not([data-original-title])').tooltip({
     container: '.CodeMirror-lines',
     placement: 'bottom',
-    delay: { 'show': 500, 'hide': 100 }
+    delay: { show: 500, hide: 100 }
   })
   // clear tooltip which described element has been removed
   $('[id^="tooltip"]').each(function (index, element) {
@@ -2069,13 +2073,13 @@ socket.on('permission', function (data) {
 
 var permission = null
 socket.on('refresh', function (data) {
-    // console.log(data);
+  // console.log(data);
   editorInstance.config.docmaxlength = data.docmaxlength
   editor.setOption('maxLength', editorInstance.config.docmaxlength)
   updateInfo(data)
   updatePermission(data.permission)
   if (!window.loaded) {
-        // auto change mode if no content detected
+    // auto change mode if no content detected
     var nocontent = editor.getValue().length <= 0
     if (nocontent) {
       if (visibleXS) { appState.currentMode = modeType.edit } else { appState.currentMode = modeType.both }
@@ -2112,7 +2116,7 @@ var cmClient = null
 var synchronized_ = null
 
 function havePendingOperation () {
-  return !!((cmClient && cmClient.state && cmClient.state.hasOwnProperty('outstanding')))
+  return !!((cmClient && cmClient.state && Object.hasOwnProperty.call(cmClient.state, 'outstanding')))
 }
 
 socket.on('doc', function (obj) {
@@ -2214,7 +2218,7 @@ socket.on('cursor focus', function (data) {
     }
   }
   if (data.id !== socket.id) { buildCursor(data) }
-    // force show
+  // force show
   var cursor = $('div[data-clientid="' + data.id + '"]')
   if (cursor.length > 0) {
     cursor.stop(true).fadeIn()
@@ -2237,7 +2241,7 @@ socket.on('cursor blur', function (data) {
     }
   }
   if (data.id !== socket.id) { buildCursor(data) }
-    // force hide
+  // force hide
   var cursor = $('div[data-clientid="' + data.id + '"]')
   if (cursor.length > 0) {
     cursor.stop(true).fadeOut()
@@ -2261,7 +2265,7 @@ function updateOnlineStatus () {
   var _onlineUsers = deduplicateOnlineUsers(onlineUsers)
   showStatus(statusType.online, _onlineUsers.length)
   var items = onlineUserList.items
-    // update or remove current list items
+  // update or remove current list items
   for (let i = 0; i < items.length; i++) {
     let found = false
     let foundindex = null
@@ -2272,7 +2276,7 @@ function updateOnlineStatus () {
         break
       }
     }
-    let id = items[i].values().id
+    const id = items[i].values().id
     if (found) {
       onlineUserList.get('id', id)[0].values(_onlineUsers[foundindex])
       shortOnlineUserList.get('id', id)[0].values(_onlineUsers[foundindex])
@@ -2281,7 +2285,7 @@ function updateOnlineStatus () {
       shortOnlineUserList.remove('id', id)
     }
   }
-    // add not in list items
+  // add not in list items
   for (let i = 0; i < _onlineUsers.length; i++) {
     let found = false
     for (let j = 0; j < items.length; j++) {
@@ -2295,16 +2299,16 @@ function updateOnlineStatus () {
       shortOnlineUserList.add(_onlineUsers[i])
     }
   }
-    // sorting
+  // sorting
   sortOnlineUserList(onlineUserList)
   sortOnlineUserList(shortOnlineUserList)
-    // render list items
+  // render list items
   renderUserStatusList(onlineUserList)
   renderUserStatusList(shortOnlineUserList)
 }
 
 function sortOnlineUserList (list) {
-    // sort order by isSelf, login state, idle state, alphabet name, color brightness
+  // sort order by isSelf, login state, idle state, alphabet name, color brightness
   list.sort('', {
     sortFunction: function (a, b) {
       var usera = a.values()
@@ -2340,7 +2344,7 @@ function renderUserStatusList (list) {
     var usericon = $(item.elm).find('.ui-user-icon')
     if (item.values().login && item.values().photo) {
       usericon.css('background-image', 'url(' + item.values().photo + ')')
-            // add 1px more to right, make it feel aligned
+      // add 1px more to right, make it feel aligned
       usericon.css('margin-right', '6px')
       $(item.elm).css('border-left', '4px solid ' + item.values().color)
       usericon.css('margin-left', '-4px')
@@ -2386,8 +2390,8 @@ function emitUserStatus (force) {
   var type = null
   if (visibleXS) { type = 'xs' } else if (visibleSM) { type = 'sm' } else if (visibleMD) { type = 'md' } else if (visibleLG) { type = 'lg' }
 
-  personalInfo['idle'] = idle.isAway
-  personalInfo['type'] = type
+  personalInfo.idle = idle.isAway
+  personalInfo.type = type
 
   for (var i = 0; i < onlineUsers.length; i++) {
     if (onlineUsers[i].id === personalInfo.id) {
@@ -2466,19 +2470,19 @@ function buildCursor (user) {
       break
   }
   if ($('div[data-clientid="' + user.id + '"]').length <= 0) {
-    let cursor = $('<div data-clientid="' + user.id + '" class="CodeMirror-other-cursor" style="display:none;"></div>')
+    const cursor = $('<div data-clientid="' + user.id + '" class="CodeMirror-other-cursor" style="display:none;"></div>')
     cursor.attr('data-line', user.cursor.line)
     cursor.attr('data-ch', user.cursor.ch)
     cursor.attr('data-offset-left', 0)
     cursor.attr('data-offset-top', 0)
 
-    let cursorbar = $('<div class="cursorbar">&nbsp;</div>')
+    const cursorbar = $('<div class="cursorbar">&nbsp;</div>')
     cursorbar[0].style.height = defaultTextHeight + 'px'
     cursorbar[0].style.borderLeft = '2px solid ' + user.color
 
     var icon = '<i class="fa ' + iconClass + '"></i>'
 
-    let cursortag = $('<div class="cursortag">' + icon + '&nbsp;<span class="name">' + user.name + '</span></div>')
+    const cursortag = $('<div class="cursortag">' + icon + '&nbsp;<span class="name">' + user.name + '</span></div>')
     // cursortag[0].style.background = color;
     cursortag[0].style.color = user.color
 
@@ -2534,15 +2538,15 @@ function buildCursor (user) {
 
     checkCursorTag(coord, cursortag)
   } else {
-    let cursor = $('div[data-clientid="' + user.id + '"]')
+    const cursor = $('div[data-clientid="' + user.id + '"]')
     cursor.attr('data-line', user.cursor.line)
     cursor.attr('data-ch', user.cursor.ch)
 
-    let cursorbar = cursor.find('.cursorbar')
+    const cursorbar = cursor.find('.cursorbar')
     cursorbar[0].style.height = defaultTextHeight + 'px'
     cursorbar[0].style.borderLeft = '2px solid ' + user.color
 
-    let cursortag = cursor.find('.cursortag')
+    const cursortag = cursor.find('.cursortag')
     cursortag.find('i').removeClass().addClass('fa').addClass(iconClass)
     cursortag.find('.name').text(user.name)
 
@@ -2551,8 +2555,8 @@ function buildCursor (user) {
       cursor[0].style.top = coord.top + 'px'
     } else {
       cursor.animate({
-        'left': coord.left,
-        'top': coord.top
+        left: coord.left,
+        top: coord.top
       }, {
         duration: cursorAnimatePeriod,
         queue: false
@@ -2619,15 +2623,15 @@ editorInstance.on('beforeChange', function (cm, change) {
   if (cmClient && !socket.connected) { cmClient.editorAdapter.ignoreNextChange = true }
 })
 editorInstance.on('cut', function () {
-    // na
+  // na
 })
 editorInstance.on('paste', function () {
-    // na
+  // na
 })
 editorInstance.on('changes', function (editor, changes) {
   updateHistory()
   var docLength = editor.getValue().length
-    // workaround for big documents
+  // workaround for big documents
   var newViewportMargin = 20
   if (docLength > 20000) {
     newViewportMargin = 1
@@ -2654,7 +2658,7 @@ editorInstance.on('focus', function (editor) {
       onlineUsers[i].cursor = editor.getCursor()
     }
   }
-  personalInfo['cursor'] = editor.getCursor()
+  personalInfo.cursor = editor.getCursor()
   socket.emit('cursor focus', editor.getCursor())
 })
 
@@ -2667,7 +2671,7 @@ function cursorActivityInner (editor) {
         onlineUsers[i].cursor = editor.getCursor()
       }
     }
-    personalInfo['cursor'] = editor.getCursor()
+    personalInfo.cursor = editor.getCursor()
     socket.emit('cursor activity', editor.getCursor())
   }
 }
@@ -2714,7 +2718,7 @@ editorInstance.on('blur', function (cm) {
       onlineUsers[i].cursor = null
     }
   }
-  personalInfo['cursor'] = null
+  personalInfo.cursor = null
   socket.emit('cursor blur')
 })
 
@@ -2759,8 +2763,8 @@ function restoreInfo () {
           $(window).scrollLeft(lastInfo.edit.scroll.left)
           $(window).scrollTop(lastInfo.edit.scroll.top)
         } else {
-          let left = lastInfo.edit.scroll.left
-          let top = lastInfo.edit.scroll.top
+          const left = lastInfo.edit.scroll.left
+          const top = lastInfo.edit.scroll.top
           editor.scrollIntoView()
           editor.scrollTo(left, top)
         }
@@ -2769,14 +2773,15 @@ function restoreInfo () {
         $(window).scrollLeft(lastInfo.view.scroll.left)
         $(window).scrollTop(lastInfo.view.scroll.top)
         break
-      case modeType.both:
-        let left = lastInfo.edit.scroll.left
-        let top = lastInfo.edit.scroll.top
+      case modeType.both: {
+        const left = lastInfo.edit.scroll.left
+        const top = lastInfo.edit.scroll.top
         editor.scrollIntoView()
         editor.scrollTo(left, top)
         ui.area.view.scrollLeft(lastInfo.view.scroll.left)
         ui.area.view.scrollTop(lastInfo.view.scroll.top)
         break
+      }
     }
 
     lastInfo.needRestore = false
@@ -2812,7 +2817,7 @@ function updateViewInner () {
     var slides = window.RevealMarkdown.slidify(editor.getValue(), slideOptions)
     ui.area.markdown.html(slides)
     window.RevealMarkdown.initialize()
-        // prevent XSS
+    // prevent XSS
     ui.area.markdown.html(preventXSS(ui.area.markdown.html()))
     ui.area.markdown.addClass('slides')
     appState.syncscroll = false
@@ -2824,12 +2829,12 @@ function updateViewInner () {
       appState.syncscroll = true
       checkSyncToggle()
     }
-        // only render again when meta changed
+    // only render again when meta changed
     if (JSON.stringify(md.meta) !== JSON.stringify(lastMeta)) {
       parseMeta(md, ui.area.codemirror, ui.area.markdown, $('#ui-toc'), $('#ui-toc-affix'))
       rendered = md.render(value)
     }
-        // prevent XSS
+    // prevent XSS
     rendered = preventXSS(rendered)
     var result = postProcess(rendered).children().toArray()
     partialUpdate(result, lastResult, ui.area.markdown.children().toArray())
@@ -2848,7 +2853,7 @@ function updateViewInner () {
   smoothHashScroll()
   isDirty = false
   clearMap()
-    // buildMap();
+  // buildMap();
   updateTitleReminder()
   if (postUpdateEvent && typeof postUpdateEvent === 'function') { postUpdateEvent() }
 }
@@ -2862,7 +2867,7 @@ function updateHistoryInner () {
 }
 
 function updateDataAttrs (src, des) {
-    // sync data attr startline and endline
+  // sync data attr startline and endline
   for (var i = 0; i < src.length; i++) {
     copyAttribute(src[i], des[i], 'data-startline')
     copyAttribute(src[i], des[i], 'data-endline')
@@ -2881,8 +2886,8 @@ function partialUpdate (src, tar, des) {
       var rawSrc = cloneAndRemoveDataAttr(src[i])
       var rawTar = cloneAndRemoveDataAttr(tar[i])
       if (rawSrc.outerHTML !== rawTar.outerHTML) {
-                // console.log(rawSrc);
-                // console.log(rawTar);
+        // console.log(rawSrc);
+        // console.log(rawTar);
         $(des[i]).replaceWith(src[i])
       }
     }
@@ -2890,55 +2895,55 @@ function partialUpdate (src, tar, des) {
     var start = 0
     // find diff start position
     for (let i = 0; i < tar.length; i++) {
-            // copyAttribute(src[i], des[i], 'data-startline');
-            // copyAttribute(src[i], des[i], 'data-endline');
-      let rawSrc = cloneAndRemoveDataAttr(src[i])
-      let rawTar = cloneAndRemoveDataAttr(tar[i])
+      // copyAttribute(src[i], des[i], 'data-startline');
+      // copyAttribute(src[i], des[i], 'data-endline');
+      const rawSrc = cloneAndRemoveDataAttr(src[i])
+      const rawTar = cloneAndRemoveDataAttr(tar[i])
       if (!rawSrc || !rawTar || rawSrc.outerHTML !== rawTar.outerHTML) {
         start = i
         break
       }
     }
-        // find diff end position
+    // find diff end position
     var srcEnd = 0
     var tarEnd = 0
     for (let i = 0; i < src.length; i++) {
-            // copyAttribute(src[i], des[i], 'data-startline');
-            // copyAttribute(src[i], des[i], 'data-endline');
-      let rawSrc = cloneAndRemoveDataAttr(src[i])
-      let rawTar = cloneAndRemoveDataAttr(tar[i])
+      // copyAttribute(src[i], des[i], 'data-startline');
+      // copyAttribute(src[i], des[i], 'data-endline');
+      const rawSrc = cloneAndRemoveDataAttr(src[i])
+      const rawTar = cloneAndRemoveDataAttr(tar[i])
       if (!rawSrc || !rawTar || rawSrc.outerHTML !== rawTar.outerHTML) {
         start = i
         break
       }
     }
-        // tar end
+    // tar end
     for (let i = 1; i <= tar.length + 1; i++) {
-      let srcLength = src.length
-      let tarLength = tar.length
-            // copyAttribute(src[srcLength - i], des[srcLength - i], 'data-startline');
-            // copyAttribute(src[srcLength - i], des[srcLength - i], 'data-endline');
-      let rawSrc = cloneAndRemoveDataAttr(src[srcLength - i])
-      let rawTar = cloneAndRemoveDataAttr(tar[tarLength - i])
+      const srcLength = src.length
+      const tarLength = tar.length
+      // copyAttribute(src[srcLength - i], des[srcLength - i], 'data-startline');
+      // copyAttribute(src[srcLength - i], des[srcLength - i], 'data-endline');
+      const rawSrc = cloneAndRemoveDataAttr(src[srcLength - i])
+      const rawTar = cloneAndRemoveDataAttr(tar[tarLength - i])
       if (!rawSrc || !rawTar || rawSrc.outerHTML !== rawTar.outerHTML) {
         tarEnd = tar.length - i
         break
       }
     }
-        // src end
+    // src end
     for (let i = 1; i <= src.length + 1; i++) {
-      let srcLength = src.length
-      let tarLength = tar.length
-            // copyAttribute(src[srcLength - i], des[srcLength - i], 'data-startline');
-            // copyAttribute(src[srcLength - i], des[srcLength - i], 'data-endline');
-      let rawSrc = cloneAndRemoveDataAttr(src[srcLength - i])
-      let rawTar = cloneAndRemoveDataAttr(tar[tarLength - i])
+      const srcLength = src.length
+      const tarLength = tar.length
+      // copyAttribute(src[srcLength - i], des[srcLength - i], 'data-startline');
+      // copyAttribute(src[srcLength - i], des[srcLength - i], 'data-endline');
+      const rawSrc = cloneAndRemoveDataAttr(src[srcLength - i])
+      const rawTar = cloneAndRemoveDataAttr(tar[tarLength - i])
       if (!rawSrc || !rawTar || rawSrc.outerHTML !== rawTar.outerHTML) {
         srcEnd = src.length - i
         break
       }
     }
-        // check if tar end overlap tar start
+    // check if tar end overlap tar start
     var overlap = 0
     for (var i = start; i >= 0; i--) {
       var rawTarStart = cloneAndRemoveDataAttr(tar[i - 1])
@@ -2946,7 +2951,7 @@ function partialUpdate (src, tar, des) {
       if (rawTarStart && rawTarEnd && rawTarStart.outerHTML === rawTarEnd.outerHTML) { overlap++ } else { break }
     }
     if (debug) { console.log('overlap:' + overlap) }
-        // show diff content
+    // show diff content
     if (debug) {
       console.log('start:' + start)
       console.log('tarEnd:' + tarEnd)
@@ -2956,7 +2961,7 @@ function partialUpdate (src, tar, des) {
     srcEnd += overlap
     var repeatAdd = (start - srcEnd) < (start - tarEnd)
     var repeatDiff = Math.abs(srcEnd - tarEnd) - 1
-        // push new elements
+    // push new elements
     var newElements = []
     if (srcEnd >= start) {
       for (let j = start; j <= srcEnd; j++) {
@@ -2969,7 +2974,7 @@ function partialUpdate (src, tar, des) {
         newElements.push(des[j].outerHTML)
       }
     }
-        // push remove elements
+    // push remove elements
     var removeElements = []
     if (tarEnd >= start) {
       for (let j = start; j <= tarEnd; j++) {
@@ -2982,13 +2987,13 @@ function partialUpdate (src, tar, des) {
         removeElements.push(des[j])
       }
     }
-        // add elements
+    // add elements
     if (debug) {
       console.log('ADD ELEMENTS')
       console.log(newElements.join('\n'))
     }
     if (des[start]) { $(newElements.join('')).insertBefore(des[start]) } else { $(newElements.join('')).insertAfter(des[start - 1]) }
-        // remove elements
+    // remove elements
     if (debug) { console.log('REMOVE ELEMENTS') }
     for (let j = 0; j < removeElements.length; j++) {
       if (debug) {
@@ -3026,50 +3031,50 @@ function reverseSortCursorMenu (dropdown) {
 var checkCursorMenu = _.throttle(checkCursorMenuInner, cursorMenuThrottle)
 
 function checkCursorMenuInner () {
-    // get element
+  // get element
   var dropdown = $('.cursor-menu > .dropdown-menu')
-    // return if not exists
+  // return if not exists
   if (dropdown.length <= 0) return
-    // set margin
+  // set margin
   var menuRightMargin = 10
   var menuBottomMargin = 4
-    // use sizer to get the real doc size (won't count status bar and gutters)
+  // use sizer to get the real doc size (won't count status bar and gutters)
   var docWidth = ui.area.codemirrorSizer.width()
-    // get editor size (status bar not count in)
+  // get editor size (status bar not count in)
   var editorHeight = ui.area.codemirror.height()
-    // get element size
+  // get element size
   var width = dropdown.outerWidth()
   var height = dropdown.outerHeight()
-    // get cursor
+  // get cursor
   var cursor = editor.getCursor()
-    // set element cursor data
+  // set element cursor data
   if (!dropdown.hasClass('CodeMirror-other-cursor')) { dropdown.addClass('CodeMirror-other-cursor') }
   dropdown.attr('data-line', cursor.line)
   dropdown.attr('data-ch', cursor.ch)
-    // get coord position
+  // get coord position
   var coord = editor.charCoords({
     line: cursor.line,
     ch: cursor.ch
   }, 'windows')
   var left = coord.left
   var top = coord.top
-    // get doc top offset (to workaround with viewport)
+  // get doc top offset (to workaround with viewport)
   var docTopOffset = ui.area.codemirrorSizerInner.position().top
-    // set offset
+  // set offset
   var offsetLeft = 0
   var offsetTop = defaultTextHeight
-    // set up side down
+  // set up side down
   window.upSideDown = false
   var lastUpSideDown = window.upSideDown = false
-    // only do when have width and height
+  // only do when have width and height
   if (width > 0 && height > 0) {
-        // make element right bound not larger than doc width
+    // make element right bound not larger than doc width
     if (left + width + offsetLeft + menuRightMargin > docWidth) { offsetLeft = -(left + width - docWidth + menuRightMargin) }
-        // flip y when element bottom bound larger than doc height
-        // and element top position is larger than element height
+    // flip y when element bottom bound larger than doc height
+    // and element top position is larger than element height
     if (top + docTopOffset + height + offsetTop + menuBottomMargin > Math.max(editor.doc.height, editorHeight) && top + docTopOffset > height + menuBottomMargin) {
       offsetTop = -(height + menuBottomMargin)
-            // reverse sort menu because upSideDown
+      // reverse sort menu because upSideDown
       dropdown.html(reverseSortCursorMenu(dropdown))
       window.upSideDown = true
     }
@@ -3077,18 +3082,18 @@ function checkCursorMenuInner () {
     lastUpSideDown = textCompleteDropdown.upSideDown
     textCompleteDropdown.upSideDown = window.upSideDown
   }
-    // make menu scroll top only if upSideDown changed
+  // make menu scroll top only if upSideDown changed
   if (window.upSideDown !== lastUpSideDown) { dropdown.scrollTop(dropdown[0].scrollHeight) }
-    // set element offset data
+  // set element offset data
   dropdown.attr('data-offset-left', offsetLeft)
   dropdown.attr('data-offset-top', offsetTop)
-    // set position
+  // set position
   dropdown[0].style.left = left + offsetLeft + 'px'
   dropdown[0].style.top = top + offsetTop + 'px'
 }
 
 function checkInIndentCode () {
-    // if line starts with tab or four spaces is a code block
+  // if line starts with tab or four spaces is a code block
   var line = editor.getLine(editor.getCursor().line)
   var isIndentCode = ((line.substr(0, 4) === '    ') || (line.substr(0, 1) === '\t'))
   return isIndentCode
@@ -3103,11 +3108,11 @@ function checkInCode () {
 function checkAbove (method) {
   var cursor = editor.getCursor()
   var text = []
-  for (var i = 0; i < cursor.line; i++) {  // contain current line
+  for (var i = 0; i < cursor.line; i++) { // contain current line
     text.push(editor.getLine(i))
   }
   text = text.join('\n') + '\n' + editor.getLine(cursor.line).slice(0, cursor.ch)
-    // console.log(text);
+  // console.log(text);
   return method(text)
 }
 
@@ -3119,7 +3124,7 @@ function checkBelow (method) {
     text.push(editor.getLine(i))
   }
   text = editor.getLine(cursor.line).slice(cursor.ch) + '\n' + text.join('\n')
-    // console.log(text);
+  // console.log(text);
   return method(text)
 }
 
@@ -3146,7 +3151,7 @@ function checkInContainer () {
 }
 
 function checkInContainerSyntax () {
-    // if line starts with :::, it's in container syntax
+  // if line starts with :::, it's in container syntax
   var line = editor.getLine(editor.getCursor().line)
   isInContainerSyntax = (line.substr(0, 3) === ':::')
 }
@@ -3162,229 +3167,229 @@ function matchInContainer (text) {
 }
 
 $(editor.getInputField())
-    .textcomplete([
-      { // emoji strategy
-        match: /(^|\n|\s)\B:([-+\w]*)$/,
-        search: function (term, callback) {
-          var line = editor.getLine(editor.getCursor().line)
-          term = line.match(this.match)[2]
-          var list = []
-          $.map(window.emojify.emojiNames, function (emoji) {
-            if (emoji.indexOf(term) === 0) { // match at first character
-              list.push(emoji)
-            }
-          })
-          $.map(window.emojify.emojiNames, function (emoji) {
-            if (emoji.indexOf(term) !== -1) { // match inside the word
-              list.push(emoji)
-            }
-          })
-          callback(list)
-        },
-        template: function (value) {
-          return '<img class="emoji" src="' + serverurl + '/build/emojify.js/dist/images/basic/' + value + '.png"></img> ' + value
-        },
-        replace: function (value) {
-          return '$1:' + value + ': '
-        },
-        index: 1,
-        context: function (text) {
-          checkInCode()
-          checkInContainer()
-          checkInContainerSyntax()
-          return !isInCode && !isInContainerSyntax
-        }
-      },
-      { // Code block language strategy
-        langs: supportCodeModes,
-        charts: supportCharts,
-        match: /(^|\n)```(\w+)$/,
-        search: function (term, callback) {
-          var line = editor.getLine(editor.getCursor().line)
-          term = line.match(this.match)[2]
-          var list = []
-          $.map(this.langs, function (lang) {
-            if (lang.indexOf(term) === 0 && lang !== term) { list.push(lang) }
-          })
-          $.map(this.charts, function (chart) {
-            if (chart.indexOf(term) === 0 && chart !== term) { list.push(chart) }
-          })
-          callback(list)
-        },
-        replace: function (lang) {
-          var ending = ''
-          if (!checkBelow(matchInCode)) {
-            ending = '\n\n```'
+  .textcomplete([
+    { // emoji strategy
+      match: /(^|\n|\s)\B:([-+\w]*)$/,
+      search: function (term, callback) {
+        var line = editor.getLine(editor.getCursor().line)
+        term = line.match(this.match)[2]
+        var list = []
+        $.map(window.emojify.emojiNames, function (emoji) {
+          if (emoji.indexOf(term) === 0) { // match at first character
+            list.push(emoji)
           }
-          if (this.langs.indexOf(lang) !== -1) { return '$1```' + lang + '=' + ending } else if (this.charts.indexOf(lang) !== -1) { return '$1```' + lang + ending }
-        },
-        done: function () {
-          var cursor = editor.getCursor()
-          var text = []
-          text.push(editor.getLine(cursor.line - 1))
-          text.push(editor.getLine(cursor.line))
-          text = text.join('\n')
-                // console.log(text);
-          if (text === '\n```') { editor.doc.cm.execCommand('goLineUp') }
-        },
-        context: function (text) {
-          return isInCode
-        }
-      },
-      { // Container strategy
-        containers: supportContainers,
-        match: /(^|\n):::(\s*)(\w*)$/,
-        search: function (term, callback) {
-          var line = editor.getLine(editor.getCursor().line)
-          term = line.match(this.match)[3].trim()
-          var list = []
-          $.map(this.containers, function (container) {
-            if (container.indexOf(term) === 0 && container !== term) { list.push(container) }
-          })
-          callback(list)
-        },
-        replace: function (lang) {
-          var ending = ''
-          if (!checkBelow(matchInContainer)) {
-            ending = '\n\n:::'
+        })
+        $.map(window.emojify.emojiNames, function (emoji) {
+          if (emoji.indexOf(term) !== -1) { // match inside the word
+            list.push(emoji)
           }
-          if (this.containers.indexOf(lang) !== -1) { return '$1:::$2' + lang + ending }
-        },
-        done: function () {
-          var cursor = editor.getCursor()
-          var text = []
-          text.push(editor.getLine(cursor.line - 1))
-          text.push(editor.getLine(cursor.line))
-          text = text.join('\n')
-                // console.log(text);
-          if (text === '\n:::') { editor.doc.cm.execCommand('goLineUp') }
-        },
-        context: function (text) {
-          return !isInCode && isInContainer
-        }
+        })
+        callback(list)
       },
-      { // header
-        match: /(?:^|\n)(\s{0,3})(#{1,6}\w*)$/,
-        search: function (term, callback) {
-          callback($.map(supportHeaders, function (header) {
-            return header.search.indexOf(term) === 0 ? header.text : null
-          }))
-        },
-        replace: function (value) {
-          return '$1' + value
-        },
-        context: function (text) {
-          return !isInCode
-        }
+      template: function (value) {
+        return '<img class="emoji" src="' + serverurl + '/build/emojify.js/dist/images/basic/' + value + '.png"></img> ' + value
       },
-      { // extra tags for list
-        match: /(^[>\s]*[-+*]\s(?:\[[x ]\]|.*))(\[\])(\w*)$/,
-        search: function (term, callback) {
-          var list = []
+      replace: function (value) {
+        return '$1:' + value + ': '
+      },
+      index: 1,
+      context: function (text) {
+        checkInCode()
+        checkInContainer()
+        checkInContainerSyntax()
+        return !isInCode && !isInContainerSyntax
+      }
+    },
+    { // Code block language strategy
+      langs: supportCodeModes,
+      charts: supportCharts,
+      match: /(^|\n)```(\w+)$/,
+      search: function (term, callback) {
+        var line = editor.getLine(editor.getCursor().line)
+        term = line.match(this.match)[2]
+        var list = []
+        $.map(this.langs, function (lang) {
+          if (lang.indexOf(term) === 0 && lang !== term) { list.push(lang) }
+        })
+        $.map(this.charts, function (chart) {
+          if (chart.indexOf(term) === 0 && chart !== term) { list.push(chart) }
+        })
+        callback(list)
+      },
+      replace: function (lang) {
+        var ending = ''
+        if (!checkBelow(matchInCode)) {
+          ending = '\n\n```'
+        }
+        if (this.langs.indexOf(lang) !== -1) { return '$1```' + lang + '=' + ending } else if (this.charts.indexOf(lang) !== -1) { return '$1```' + lang + ending }
+      },
+      done: function () {
+        var cursor = editor.getCursor()
+        var text = []
+        text.push(editor.getLine(cursor.line - 1))
+        text.push(editor.getLine(cursor.line))
+        text = text.join('\n')
+        // console.log(text);
+        if (text === '\n```') { editor.doc.cm.execCommand('goLineUp') }
+      },
+      context: function (text) {
+        return isInCode
+      }
+    },
+    { // Container strategy
+      containers: supportContainers,
+      match: /(^|\n):::(\s*)(\w*)$/,
+      search: function (term, callback) {
+        var line = editor.getLine(editor.getCursor().line)
+        term = line.match(this.match)[3].trim()
+        var list = []
+        $.map(this.containers, function (container) {
+          if (container.indexOf(term) === 0 && container !== term) { list.push(container) }
+        })
+        callback(list)
+      },
+      replace: function (lang) {
+        var ending = ''
+        if (!checkBelow(matchInContainer)) {
+          ending = '\n\n:::'
+        }
+        if (this.containers.indexOf(lang) !== -1) { return '$1:::$2' + lang + ending }
+      },
+      done: function () {
+        var cursor = editor.getCursor()
+        var text = []
+        text.push(editor.getLine(cursor.line - 1))
+        text.push(editor.getLine(cursor.line))
+        text = text.join('\n')
+        // console.log(text);
+        if (text === '\n:::') { editor.doc.cm.execCommand('goLineUp') }
+      },
+      context: function (text) {
+        return !isInCode && isInContainer
+      }
+    },
+    { // header
+      match: /(?:^|\n)(\s{0,3})(#{1,6}\w*)$/,
+      search: function (term, callback) {
+        callback($.map(supportHeaders, function (header) {
+          return header.search.indexOf(term) === 0 ? header.text : null
+        }))
+      },
+      replace: function (value) {
+        return '$1' + value
+      },
+      context: function (text) {
+        return !isInCode
+      }
+    },
+    { // extra tags for list
+      match: /(^[>\s]*[-+*]\s(?:\[[x ]\]|.*))(\[\])(\w*)$/,
+      search: function (term, callback) {
+        var list = []
+        $.map(supportExtraTags, function (extratag) {
+          if (extratag.search.indexOf(term) === 0) { list.push(extratag.command()) }
+        })
+        $.map(supportReferrals, function (referral) {
+          if (referral.search.indexOf(term) === 0) { list.push(referral.text) }
+        })
+        callback(list)
+      },
+      replace: function (value) {
+        return '$1' + value
+      },
+      context: function (text) {
+        return !isInCode
+      }
+    },
+    { // extra tags for blockquote
+      match: /(?:^|\n|\s)(>.*|\s|)((\^|)\[(\^|)\](\[\]|\(\)|:|)\s*\w*)$/,
+      search: function (term, callback) {
+        var line = editor.getLine(editor.getCursor().line)
+        var quote = line.match(this.match)[1].trim()
+        var list = []
+        if (quote.indexOf('>') === 0) {
           $.map(supportExtraTags, function (extratag) {
             if (extratag.search.indexOf(term) === 0) { list.push(extratag.command()) }
           })
-          $.map(supportReferrals, function (referral) {
-            if (referral.search.indexOf(term) === 0) { list.push(referral.text) }
-          })
-          callback(list)
-        },
-        replace: function (value) {
-          return '$1' + value
-        },
-        context: function (text) {
-          return !isInCode
         }
-      },
-      { // extra tags for blockquote
-        match: /(?:^|\n|\s)(>.*|\s|)((\^|)\[(\^|)\](\[\]|\(\)|:|)\s*\w*)$/,
-        search: function (term, callback) {
-          var line = editor.getLine(editor.getCursor().line)
-          var quote = line.match(this.match)[1].trim()
-          var list = []
-          if (quote.indexOf('>') === 0) {
-            $.map(supportExtraTags, function (extratag) {
-              if (extratag.search.indexOf(term) === 0) { list.push(extratag.command()) }
-            })
-          }
-          $.map(supportReferrals, function (referral) {
-            if (referral.search.indexOf(term) === 0) { list.push(referral.text) }
-          })
-          callback(list)
-        },
-        replace: function (value) {
-          return '$1' + value
-        },
-        context: function (text) {
-          return !isInCode
-        }
-      },
-      { // referral
-        match: /(^\s*|\n|\s{2})((\[\]|\[\]\[\]|\[\]\(\)|!|!\[\]|!\[\]\[\]|!\[\]\(\))\s*\w*)$/,
-        search: function (term, callback) {
-          callback($.map(supportReferrals, function (referral) {
-            return referral.search.indexOf(term) === 0 ? referral.text : null
-          }))
-        },
-        replace: function (value) {
-          return '$1' + value
-        },
-        context: function (text) {
-          return !isInCode
-        }
-      },
-      { // externals
-        match: /(^|\n|\s)\{\}(\w*)$/,
-        search: function (term, callback) {
-          callback($.map(supportExternals, function (external) {
-            return external.search.indexOf(term) === 0 ? external.text : null
-          }))
-        },
-        replace: function (value) {
-          return '$1' + value
-        },
-        context: function (text) {
-          return !isInCode
-        }
-      }
-    ], {
-      appendTo: $('.cursor-menu')
-    })
-    .on({
-      'textComplete:beforeSearch': function (e) {
-            // NA
-      },
-      'textComplete:afterSearch': function (e) {
-        checkCursorMenu()
-      },
-      'textComplete:select': function (e, value, strategy) {
-            // NA
-      },
-      'textComplete:show': function (e) {
-        $(this).data('autocompleting', true)
-        editor.setOption('extraKeys', {
-          'Up': function () {
-            return false
-          },
-          'Right': function () {
-            editor.doc.cm.execCommand('goCharRight')
-          },
-          'Down': function () {
-            return false
-          },
-          'Left': function () {
-            editor.doc.cm.execCommand('goCharLeft')
-          },
-          'Enter': function () {
-            return false
-          },
-          'Backspace': function () {
-            editor.doc.cm.execCommand('delCharBefore')
-          }
+        $.map(supportReferrals, function (referral) {
+          if (referral.search.indexOf(term) === 0) { list.push(referral.text) }
         })
+        callback(list)
       },
-      'textComplete:hide': function (e) {
-        $(this).data('autocompleting', false)
-        editor.setOption('extraKeys', editorInstance.defaultExtraKeys)
+      replace: function (value) {
+        return '$1' + value
+      },
+      context: function (text) {
+        return !isInCode
       }
-    })
+    },
+    { // referral
+      match: /(^\s*|\n|\s{2})((\[\]|\[\]\[\]|\[\]\(\)|!|!\[\]|!\[\]\[\]|!\[\]\(\))\s*\w*)$/,
+      search: function (term, callback) {
+        callback($.map(supportReferrals, function (referral) {
+          return referral.search.indexOf(term) === 0 ? referral.text : null
+        }))
+      },
+      replace: function (value) {
+        return '$1' + value
+      },
+      context: function (text) {
+        return !isInCode
+      }
+    },
+    { // externals
+      match: /(^|\n|\s)\{\}(\w*)$/,
+      search: function (term, callback) {
+        callback($.map(supportExternals, function (external) {
+          return external.search.indexOf(term) === 0 ? external.text : null
+        }))
+      },
+      replace: function (value) {
+        return '$1' + value
+      },
+      context: function (text) {
+        return !isInCode
+      }
+    }
+  ], {
+    appendTo: $('.cursor-menu')
+  })
+  .on({
+    'textComplete:beforeSearch': function (e) {
+      // NA
+    },
+    'textComplete:afterSearch': function (e) {
+      checkCursorMenu()
+    },
+    'textComplete:select': function (e, value, strategy) {
+      // NA
+    },
+    'textComplete:show': function (e) {
+      $(this).data('autocompleting', true)
+      editor.setOption('extraKeys', {
+        Up: function () {
+          return false
+        },
+        Right: function () {
+          editor.doc.cm.execCommand('goCharRight')
+        },
+        Down: function () {
+          return false
+        },
+        Left: function () {
+          editor.doc.cm.execCommand('goCharLeft')
+        },
+        Enter: function () {
+          return false
+        },
+        Backspace: function () {
+          editor.doc.cm.execCommand('delCharBefore')
+        }
+      })
+    },
+    'textComplete:hide': function (e) {
+      $(this).data('autocompleting', false)
+      editor.setOption('extraKeys', editorInstance.defaultExtraKeys)
+    }
+  })

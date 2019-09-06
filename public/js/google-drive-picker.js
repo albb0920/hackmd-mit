@@ -54,13 +54,13 @@
       view.setIncludeFolders(true)
       view.setOwnedByMe(true)
       this.picker = new window.google.picker.PickerBuilder()
-                      .enableFeature(window.google.picker.Feature.NAV_HIDDEN)
-                      .addView(view)
-                      .setAppId(this.clientId)
-                      .setOAuthToken(accessToken)
-                      .setCallback(this._pickerCallback.bind(this))
-                      .build()
-                      .setVisible(true)
+        .enableFeature(window.google.picker.Feature.NAV_HIDDEN)
+        .addView(view)
+        .setAppId(this.clientId)
+        .setOAuthToken(accessToken)
+        .setCallback(this._pickerCallback.bind(this))
+        .build()
+        .setVisible(true)
     },
 
     /**
