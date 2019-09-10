@@ -20,6 +20,7 @@ var i18n = require('i18n')
 var flash = require('connect-flash')
 
 // core
+require('./lib/compat')
 var config = require('./lib/config')
 var logger = require('./lib/logger')
 var response = require('./lib/response')

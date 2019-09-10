@@ -1,8 +1,22 @@
 {
+  "sourceType": "unambiguous",
   "presets": [
-    "es2015"
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "browsers": ["last 2 versions"],
+          "node": "8"
+        }
+      }
+    ]
   ],
   "plugins": [
-    "transform-runtime"
+    [
+      "@babel/transform-runtime",
+      {
+        "corejs": 3
+      }
+    ]
   ]
 }

@@ -1,6 +1,6 @@
 var webpack = require('webpack')
 var path = require('path')
-var ExtractTextPlugin = require('extract-text-webpack-plugin')
+var MiniCssExtractPlugin = require('mini-css-extract-plugin')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 var CopyWebpackPlugin = require('copy-webpack-plugin')
 
@@ -13,17 +13,11 @@ module.exports = {
       $: 'jquery',
       jQuery: 'jquery',
       'window.jQuery': 'jquery',
-      'moment': 'moment',
-      'Handlebars': 'handlebars'
+      moment: 'moment',
+      Handlebars: 'handlebars'
     }),
     new webpack.optimize.OccurrenceOrderPlugin(true),
-    new webpack.optimize.CommonsChunkPlugin({
-      names: ['cover', 'index', 'pretty', 'slide', 'vendor'],
-      children: true,
-      async: true,
-      filename: '[name].js',
-      minChunks: Infinity
-    }),
+    new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
       template: 'public/views/includes/header.ejs',
       chunks: ['font', 'index-styles', 'index'],
@@ -163,13 +157,14 @@ module.exports = {
     font: path.join(__dirname, 'public/css/google-font.css'),
     'font-pack': path.join(__dirname, 'public/css/font.css'),
     common: [
-      'expose?jQuery!expose?$!jquery',
+      'expose-loader?jQuery!expose-loader?$!jquery',
       'velocity-animate',
-      'imports?$=jquery!jquery-mousewheel',
+      'imports-loader?$=jquery!jquery-mousewheel',
       'bootstrap'
     ],
     cover: [
-      'babel-polyfill',
+      'core-js/stable',
+      'regenerator-runtime/runtime',
       path.join(__dirname, 'public/js/cover.js')
     ],
     'cover-styles-pack': [
@@ -180,29 +175,30 @@ module.exports = {
       path.join(__dirname, 'node_modules/select2/select2-bootstrap.css')
     ],
     'cover-pack': [
-      'babel-polyfill',
+      'core-js/stable',
+      'regenerator-runtime/runtime',
       'bootstrap-validator',
-      'expose?select2!select2',
-      'expose?moment!moment',
-      'script!js-url',
+      'expose-loader?select2!select2',
+      'expose-loader?moment!moment',
+      'script-loader!js-url',
       path.join(__dirname, 'public/js/cover.js')
     ],
     index: [
-      'babel-polyfill',
-      'script!jquery-ui-resizable',
-      'script!js-url',
-      'expose?filterXSS!xss',
-      'script!Idle.Js',
-      'expose?LZString!lz-string',
-      'script!codemirror',
-      'script!inlineAttachment',
-      'script!jqueryTextcomplete',
-      'script!codemirrorSpellChecker',
-      'script!codemirrorInlineAttachment',
-      'script!ot',
+      'core-js/stable',
+      'regenerator-runtime/runtime',
+      'script-loader!jquery-ui-resizable',
+      'script-loader!js-url',
+      'expose-loader?filterXSS!xss',
+      'expose-loader?LZString!lz-string',
+      'script-loader!codemirror',
+      'script-loader!inlineAttachment',
+      'script-loader!jqueryTextcomplete',
+      'script-loader!codemirrorSpellChecker',
+      'script-loader!codemirrorInlineAttachment',
+      'script-loader!ot',
       'flowchart.js',
       'js-sequence-diagrams',
-      'expose?RevealMarkdown!reveal-markdown',
+      'expose-loader?RevealMarkdown!reveal-markdown',
       path.join(__dirname, 'public/js/google-drive-upload.js'),
       path.join(__dirname, 'public/js/google-drive-picker.js'),
       path.join(__dirname, 'public/js/index.js')
@@ -234,43 +230,44 @@ module.exports = {
       path.join(__dirname, 'node_modules/octicons/octicons/octicons.css')
     ],
     'index-pack': [
-      'babel-polyfill',
-      'expose?Spinner!spin.js',
-      'script!jquery-ui-resizable',
+      'core-js/stable',
+      'regenerator-runtime/runtime',
+      'expose-loader?Spinner!spin.js',
+      'script-loader!jquery-ui-resizable',
       'bootstrap-validator',
-      'expose?jsyaml!js-yaml',
-      'script!mermaid',
-      'expose?moment!moment',
-      'script!js-url',
-      'script!handlebars',
-      'expose?hljs!highlight.js',
-      'expose?emojify!emojify.js',
-      'expose?filterXSS!xss',
-      'script!Idle.Js',
-      'script!gist-embed',
-      'expose?LZString!lz-string',
-      'script!codemirror',
-      'script!inlineAttachment',
-      'script!jqueryTextcomplete',
-      'script!codemirrorSpellChecker',
-      'script!codemirrorInlineAttachment',
-      'script!ot',
+      'expose-loader?jsyaml!js-yaml',
+      'script-loader!mermaid',
+      'expose-loader?moment!moment',
+      'script-loader!js-url',
+      'script-loader!handlebars',
+      'expose-loader?hljs!highlight.js',
+      'expose-loader?emojify!emojify.js',
+      'expose-loader?filterXSS!xss',
+      'script-loader!gist-embed',
+      'expose-loader?LZString!lz-string',
+      'script-loader!codemirror',
+      'script-loader!inlineAttachment',
+      'script-loader!jqueryTextcomplete',
+      'script-loader!codemirrorSpellChecker',
+      'script-loader!codemirrorInlineAttachment',
+      'script-loader!ot',
       'flowchart.js',
       'js-sequence-diagrams',
-      'expose?Viz!viz.js',
-      'script!abcjs',
-      'expose?io!socket.io-client',
-      'expose?RevealMarkdown!reveal-markdown',
+      'expose-loader?Viz!viz.js',
+      'script-loader!abcjs',
+      'expose-loader?io!socket.io-client',
+      'expose-loader?RevealMarkdown!reveal-markdown',
       path.join(__dirname, 'public/js/google-drive-upload.js'),
       path.join(__dirname, 'public/js/google-drive-picker.js'),
       path.join(__dirname, 'public/js/index.js')
     ],
     pretty: [
-      'babel-polyfill',
-      'expose?filterXSS!xss',
+      'core-js/stable',
+      'regenerator-runtime/runtime',
+      'expose-loader?filterXSS!xss',
       'flowchart.js',
       'js-sequence-diagrams',
-      'expose?RevealMarkdown!reveal-markdown',
+      'expose-loader?RevealMarkdown!reveal-markdown',
       path.join(__dirname, 'public/js/pretty.js')
     ],
     'pretty-styles': [
@@ -286,29 +283,29 @@ module.exports = {
       path.join(__dirname, 'node_modules/octicons/octicons/octicons.css')
     ],
     'pretty-pack': [
-      'babel-polyfill',
-      'expose?jsyaml!js-yaml',
-      'script!mermaid',
-      'expose?moment!moment',
-      'script!handlebars',
-      'expose?hljs!highlight.js',
-      'expose?emojify!emojify.js',
-      'expose?filterXSS!xss',
-      'script!gist-embed',
+      'expose-loader?jsyaml!js-yaml',
+      'script-loader!mermaid',
+      'expose-loader?moment!moment',
+      'script-loader!handlebars',
+      'expose-loader?hljs!highlight.js',
+      'expose-loader?emojify!emojify.js',
+      'expose-loader?filterXSS!xss',
+      'script-loader!gist-embed',
       'flowchart.js',
       'js-sequence-diagrams',
-      'expose?Viz!viz.js',
-      'script!abcjs',
-      'expose?RevealMarkdown!reveal-markdown',
+      'expose-loader?Viz!viz.js',
+      'script-loader!abcjs',
+      'expose-loader?RevealMarkdown!reveal-markdown',
       path.join(__dirname, 'public/js/pretty.js')
     ],
     slide: [
-      'babel-polyfill',
+      'core-js/stable',
+      'regenerator-runtime/runtime',
       'bootstrap-tooltip',
-      'expose?filterXSS!xss',
+      'expose-loader?filterXSS!xss',
       'flowchart.js',
       'js-sequence-diagrams',
-      'expose?RevealMarkdown!reveal-markdown',
+      'expose-loader?RevealMarkdown!reveal-markdown',
       path.join(__dirname, 'public/js/slide.js')
     ],
     'slide-styles': [
@@ -323,26 +320,27 @@ module.exports = {
       path.join(__dirname, 'node_modules/octicons/octicons/octicons.css')
     ],
     'slide-pack': [
-      'babel-polyfill',
-      'expose?jQuery!expose?$!jquery',
+      'core-js/stable',
+      'regenerator-runtime/runtime',
+      'expose-loader?jQuery!expose-loader?$!jquery',
       'velocity-animate',
-      'imports?$=jquery!jquery-mousewheel',
+      'imports-loader?$=jquery!jquery-mousewheel',
       'bootstrap-tooltip',
-      'expose?jsyaml!js-yaml',
-      'script!mermaid',
-      'expose?moment!moment',
-      'script!handlebars',
-      'expose?hljs!highlight.js',
-      'expose?emojify!emojify.js',
-      'expose?filterXSS!xss',
-      'script!gist-embed',
+      'expose-loader?jsyaml!js-yaml',
+      'script-loader!mermaid',
+      'expose-loader?moment!moment',
+      'script-loader!handlebars',
+      'expose-loader?hljs!highlight.js',
+      'expose-loader?emojify!emojify.js',
+      'expose-loader?filterXSS!xss',
+      'script-loader!gist-embed',
       'flowchart.js',
       'js-sequence-diagrams',
-      'expose?Viz!viz.js',
-      'script!abcjs',
+      'expose-loader?Viz!viz.js',
+      'script-loader!abcjs',
       'headjs',
-      'expose?Reveal!reveal.js',
-      'expose?RevealMarkdown!reveal-markdown',
+      'expose-loader?Reveal!reveal.js',
+      'expose-loader?RevealMarkdown!reveal-markdown',
       path.join(__dirname, 'public/js/slide.js')
     ]
   },
@@ -350,93 +348,106 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'public/build'),
     publicPath: '/build/',
-    filename: '[name].js',
-    baseUrl: '<%- url %>'
+    filename: '[name].js'
   },
 
   resolve: {
-    modulesDirectories: [
-      path.resolve(__dirname, 'src'),
-      path.resolve(__dirname, 'node_modules')
-    ],
-    extensions: ['', '.js'],
     alias: {
-      codemirror: path.join(__dirname, 'node_modules/codemirror/codemirror.min.js'),
+      codemirror: 'codemirror/codemirror.min.js',
       inlineAttachment: path.join(__dirname, 'public/vendor/inlineAttachment/inline-attachment.js'),
       jqueryTextcomplete: path.join(__dirname, 'public/vendor/jquery-textcomplete/jquery.textcomplete.js'),
       codemirrorSpellChecker: path.join(__dirname, 'public/vendor/codemirror-spell-checker/spell-checker.min.js'),
       codemirrorInlineAttachment: path.join(__dirname, 'public/vendor/inlineAttachment/codemirror.inline-attachment.js'),
       ot: path.join(__dirname, 'public/vendor/ot/ot.min.js'),
-      mermaid: path.join(__dirname, 'node_modules/mermaid/dist/mermaid.min.js'),
-      handlebars: path.join(__dirname, 'node_modules/handlebars/dist/handlebars.min.js'),
+      mermaid: 'mermaid/dist/mermaid.min.js',
+      handlebars: 'handlebars/dist/handlebars.min.js',
       'jquery-ui-resizable': path.join(__dirname, 'public/vendor/jquery-ui/jquery-ui.min.js'),
-      'gist-embed': path.join(__dirname, 'node_modules/gist-embed/gist-embed.min.js'),
+      'gist-embed': 'gist-embed/gist-embed.min.js',
       'bootstrap-tooltip': path.join(__dirname, 'public/vendor/bootstrap/tooltip.min.js'),
-      'headjs': path.join(__dirname, 'node_modules/reveal.js/lib/js/head.min.js'),
+      headjs: 'reveal.js/lib/js/head.min.js',
       'reveal-markdown': path.join(__dirname, 'public/js/reveal-markdown.js'),
-      abcjs: path.join(__dirname, 'public/vendor/abcjs_basic_3.1.1-min.js')
+      abcjs: path.join(__dirname, 'public/vendor/abcjs_basic_3.1.1-min.js'),
+      'js-sequence-diagrams': 'imports-loader?Raphael=raphael!@hackmd/js-sequence-diagrams/build/main.js'
     }
   },
 
   externals: {
     'viz.js': 'Viz',
     'socket.io-client': 'io',
-    'jquery': '$',
-    'moment': 'moment',
-    'handlebars': 'Handlebars',
+    jquery: '$',
+    moment: 'moment',
+    handlebars: 'Handlebars',
     'highlight.js': 'hljs',
-    'select2': 'select2'
+    select2: 'select2'
   },
 
   module: {
-    loaders: [{
-      test: /\.json$/,
-      loader: 'json-loader'
-    }, {
+    rules: [{
       test: /\.js$/,
-      loader: 'babel',
+      loader: 'babel-loader',
       exclude: [/node_modules/, /public\/vendor/]
     }, {
       test: /\.css$/,
-      loader: ExtractTextPlugin.extract('style-loader', 'css-loader')
+      use: [MiniCssExtractPlugin.loader, 'css-loader']
     }, {
       test: /\.scss$/,
-      loader: ExtractTextPlugin.extract('style-loader', 'sass-loader')
+      use: [
+        MiniCssExtractPlugin.loader,
+        { loader: 'css-loader', options: { importLoaders: 1 } },
+        'sass-loader'
+      ]
     }, {
       test: /\.less$/,
-      loader: ExtractTextPlugin.extract('style-loader', 'less-loader')
-    }, {
-      test: require.resolve('js-sequence-diagrams'),
-      loader: 'imports?_=lodash&Raphael=raphael'
+      use: [
+        MiniCssExtractPlugin.loader,
+        { loader: 'css-loader', options: { importLoaders: 1 } },
+        'less-loader'
+      ]
     }, {
       test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-      loader: 'file'
+      loader: 'file-loader'
     }, {
       test: /\.html$/,
-      loader: 'string'
+      loader: 'string-loader'
     }, {
       test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
-      loader: 'url?prefix=font/&limit=5000'
+      use: [
+        {
+          loader: 'url-loader',
+          options: { prefix: 'font/&limit=5000' }
+        }
+      ]
     }, {
       test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-      loader: 'url?limit=10000&mimetype=application/octet-stream'
+      use: [{
+        loader: 'url-loader',
+        options: { limit: '5000', mimetype: 'application/octet-stream' }
+      }]
     }, {
       test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-      loader: 'url?limit=10000&mimetype=image/svg+xml'
+      use: [{
+        loader: 'url-loader',
+        options: { limit: '10000', mimetype: 'svg+xml' }
+      }]
     }, {
       test: /\.png(\?v=\d+\.\d+\.\d+)?$/,
-      loader: 'url?limit=10000&mimetype=image/png'
+      use: [{
+        loader: 'url-loader',
+        options: { limit: '10000', mimetype: 'image/png' }
+      }]
     }, {
       test: /\.gif(\?v=\d+\.\d+\.\d+)?$/,
-      loader: 'url?limit=10000&mimetype=image/gif'
+      use: [{
+        loader: 'url-loader',
+        options: { limit: '10000', mimetype: 'image/gif' }
+      }]
     }]
   },
+
   node: {
     fs: 'empty'
   },
 
-  quiet: false,
-  noInfo: false,
   stats: {
     assets: false
   }

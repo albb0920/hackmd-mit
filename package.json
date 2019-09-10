@@ -15,7 +15,10 @@
     "doctoc": "doctoc --title='# Table of Contents' README.md"
   },
   "dependencies": {
-    "Idle.Js": "git+https://github.com/shawnmclean/Idle.js",
+    "@babel/core": "^7.6.0",
+    "@babel/runtime-corejs3": "^7.6.0",
+    "@hackmd/idle-js": "^1.0.1",
+    "@hackmd/js-sequence-diagrams": "~0.0.1-alpha.3",
     "async": "^2.1.4",
     "aws-sdk": "^2.7.20",
     "blueimp-md5": "^2.6.0",
@@ -30,6 +33,7 @@
     "connect-session-sequelize": "^4.1.0",
     "cookie": "0.3.1",
     "cookie-parser": "1.4.3",
+    "copy-webpack-plugin": "^5.0.4",
     "deep-freeze": "^0.0.1",
     "diff-match-patch": "git+https://github.com/hackmdio/diff-match-patch.git",
     "ejs": "^2.5.5",
@@ -52,7 +56,6 @@
     "jquery-mousewheel": "^3.1.13",
     "jquery-ui": "^1.12.1",
     "js-cookie": "^2.1.3",
-    "@hackmd/js-sequence-diagrams": "~0.0.1-alpha.3",
     "js-url": "^2.3.0",
     "js-yaml": "^3.7.0",
     "jsdom-nogyp": "^0.8.3",
@@ -75,8 +78,8 @@
     "markdown-it-sup": "^1.0.0",
     "markdown-pdf": "^9.0.0",
     "mathjax": "~2.7.0",
-    "mermaid": "~7.1.0",
     "mattermost": "^3.4.0",
+    "mermaid": "~7.1.0",
     "meta-marked": "^0.4.2",
     "method-override": "^2.3.7",
     "moment": "^2.17.1",
@@ -93,8 +96,8 @@
     "passport-ldapauth": "^0.6.0",
     "passport-local": "^1.0.0",
     "passport-oauth2": "^1.4.0",
-    "passport-twitter": "^1.0.4",
     "passport-saml": "^0.31.0",
+    "passport-twitter": "^1.0.4",
     "passport.socketio": "^3.7.0",
     "pdfobject": "^2.0.201604172",
     "pg": "^6.1.2",
@@ -113,7 +116,7 @@
     "socket.io-client": "~1.7.2",
     "spin.js": "^4.0.0",
     "sqlite3": "^3.1.8",
-    "store": "^1.3.20",
+    "store": "~2.0.12",
     "string": "^3.3.3",
     "tedious": "^1.14.0",
     "to-markdown": "^3.0.3",
@@ -127,7 +130,7 @@
     "xss": "^0.3.3"
   },
   "engines": {
-    "node": ">=6.x"
+    "node": ">=8.x"
   },
   "bugs": "https://github.com/hackmdio/hackmd/issues",
   "keywords": [
@@ -147,35 +150,30 @@
     "url": "https://github.com/hackmdio/hackmd.git"
   },
   "devDependencies": {
-    "babel-cli": "^6.18.0",
-    "babel-core": "^6.21.0",
-    "babel-loader": "^6.2.10",
-    "babel-plugin-transform-runtime": "^6.15.0",
-    "babel-polyfill": "^6.22.0",
-    "babel-preset-es2015": "^6.18.0",
-    "babel-runtime": "^6.20.0",
-    "copy-webpack-plugin": "^4.0.1",
-    "css-loader": "^0.26.1",
+    "@babel/plugin-transform-runtime": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
+    "babel-loader": "^8.0.6",
+    "core-js": "^3.2.1",
+    "css-loader": "^3.2.0",
     "doctoc": "^1.3.0",
     "ejs-loader": "^0.3.0",
     "exports-loader": "^0.6.3",
     "expose-loader": "^0.7.1",
-    "extract-text-webpack-plugin": "^1.0.1",
-    "file-loader": "^0.9.0",
-    "html-webpack-plugin": "^2.25.0",
+    "file-loader": "~4.2.0",
+    "html-webpack-plugin": "^3.2.0",
     "imports-loader": "^0.7.0",
-    "json-loader": "^0.5.4",
     "jsonlint": "^1.6.2",
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
-    "optimize-css-assets-webpack-plugin": "^1.3.0",
+    "mini-css-extract-plugin": "^0.8.0",
+    "regenerator-runtime": "^0.13.3",
     "script-loader": "^0.7.0",
     "standardx": "5.0.0",
     "string-loader": "^0.0.1",
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.7",
-    "webpack": "^1.14.0",
-    "webpack-parallel-uglify-plugin": "^0.2.0"
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.8"
   },
   "standardx": {
     "globals": [
@@ -203,7 +201,6 @@
     "ignore": [
       "lib/ot",
       "public/vendor",
-      "webpack.*.js",
       "lib/migrations/"
     ]
   },
