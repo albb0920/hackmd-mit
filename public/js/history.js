@@ -2,7 +2,7 @@
 /* global serverurl, Cookies, moment */
 
 import store from 'store'
-import S from 'string'
+import { AllHtmlEntities } from 'html-entities'
 
 import {
   checkIfAuth
@@ -11,6 +11,8 @@ import {
 import {
   urlpath
 } from './lib/config'
+
+const htmlEntities = new AllHtmlEntities()
 
 window.migrateHistoryFromTempCallback = null
 
@@ -296,9 +298,15 @@ function parseToHistory (list, notehistory, callback) {
       notehistory[i].timestamp = timestamp.valueOf()
       notehistory[i].fromNow = timestamp.fromNow()
       notehistory[i].time = timestamp.format('llll')
+
       // prevent XSS
-      notehistory[i].text = S(notehistory[i].text).escapeHTML().s
-      notehistory[i].tags = (notehistory[i].tags && notehistory[i].tags.length > 0) ? S(notehistory[i].tags).escapeHTML().s.split(',') : []
+      notehistory[i].text = htmlEntities.encode(notehistory[i].text)
+
+      notehistory[i].tags =
+        (notehistory[i].tags && notehistory[i].tags.length > 0)
+          ? htmlEntities.encode(notehistory[i].tags).split(',')
+          : []
+
       // add to list
       if (notehistory[i].id && list.get('id', notehistory[i].id).length === 0) { list.add(notehistory[i]) }
     }

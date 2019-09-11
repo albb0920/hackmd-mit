@@ -25,12 +25,14 @@ import {
 
 import { saveAs } from 'file-saver'
 import List from 'list.js'
-import S from 'string'
+import { AllHtmlEntities } from 'html-entities'
 
-require('./locale')
+import './locale'
 
-require('../css/cover.css')
-require('../css/site.css')
+import '../css/cover.css'
+import '../css/site.css'
+
+const htmlEntities = new AllHtmlEntities()
 
 const options = {
   valueNames: ['id', 'text', 'timestamp', 'fromNow', 'time', 'tags', 'pinned'],
@@ -393,7 +395,7 @@ function buildTagsFilter (tags) {
   for (let i = 0; i < tags.length; i++) {
     tags[i] = {
       id: i,
-      text: S(tags[i]).unescapeHTML().s
+      text: htmlEntities.decode(tags[i])
     }
   }
   filtertags = tags

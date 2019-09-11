@@ -4,7 +4,9 @@
 import Prism from 'prismjs'
 import hljs from 'highlight.js'
 import PDFObject from 'pdfobject'
-import S from 'string'
+import striptags from 'striptags'
+import { dasherize } from 'inflection'
+import { AllHtmlEntities } from 'html-entities'
 import { saveAs } from 'file-saver'
 
 import getUIElements from './lib/editor/ui-elements'
@@ -15,18 +17,20 @@ import markdownitContainer from 'markdown-it-container'
 /* Defined regex markdown it plugins */
 import Plugin from 'markdown-it-regexp'
 
-require('prismjs/themes/prism.css')
-require('prismjs/components/prism-wiki')
-require('prismjs/components/prism-haskell')
-require('prismjs/components/prism-go')
-require('prismjs/components/prism-typescript')
-require('prismjs/components/prism-jsx')
-require('prismjs/components/prism-makefile')
-require('prismjs/components/prism-gherkin')
+import 'prismjs/themes/prism.css'
+import 'prismjs/components/prism-wiki'
+import 'prismjs/components/prism-haskell'
+import 'prismjs/components/prism-go'
+import 'prismjs/components/prism-typescript'
+import 'prismjs/components/prism-jsx'
+import 'prismjs/components/prism-makefile'
+import 'prismjs/components/prism-gherkin'
 
-require('./lib/common/login')
-require('../vendor/md-toc')
-var Viz = require('viz.js')
+import './lib/common/login'
+import '../vendor/md-toc'
+import Viz from 'viz.js'
+
+const htmlEntities = new AllHtmlEntities()
 const ui = getUIElements()
 
 // auto update last change
@@ -162,7 +166,7 @@ export function renderTags (view) {
 }
 
 function slugifyWithUTF8 (text) {
-  let newText = S(text.toLowerCase()).trim().stripTags().dasherize().s
+  let newText = dasherize(striptags(text.toLowerCase().trim()))
   newText = newText.replace(/([!"#$%&'()*+,./:;<=>?@[\\\]^`{|}~])/g, '')
   return newText
 }
@@ -515,22 +519,22 @@ export function finishView (view) {
             value: code
           }
         } else if (reallang === 'haskell' || reallang === 'go' || reallang === 'typescript' || reallang === 'jsx' || reallang === 'gherkin') {
-          code = S(code).unescapeHTML().s
+          code = htmlEntities.decode(code)
           result = {
             value: Prism.highlight(code, Prism.languages[reallang])
           }
         } else if (reallang === 'tiddlywiki' || reallang === 'mediawiki') {
-          code = S(code).unescapeHTML().s
+          code = htmlEntities.decode(code)
           result = {
             value: Prism.highlight(code, Prism.languages.wiki)
           }
         } else if (reallang === 'cmake') {
-          code = S(code).unescapeHTML().s
+          code = htmlEntities.decode(code)
           result = {
             value: Prism.highlight(code, Prism.languages.makefile)
           }
         } else {
-          code = S(code).unescapeHTML().s
+          code = htmlEntities.decode(code)
           const languages = hljs.listLanguages()
           if (!languages.includes(reallang)) {
             result = hljs.highlightAuto(code)
@@ -921,7 +925,9 @@ export function scrollToHash () {
 
 function highlightRender (code, lang) {
   if (!lang || /no(-?)highlight|plain|text/.test(lang)) { return }
-  code = S(code).escapeHTML().s
+
+  code = htmlEntities.encode(code)
+
   if (lang === 'sequence') {
     return `<div class="sequence-diagram raw">${code}</div>`
   } else if (lang === 'flow') {
