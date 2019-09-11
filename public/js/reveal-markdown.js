@@ -1,7 +1,7 @@
 /* eslint-env browser, jquery */
 
-const preventXSS = require('./render')
-const md = require('./extra');
+const preventXSS = require('./render').preventXSS
+const md = require('./extra').md;
 
 /**
  * The reveal.js markdown plugin. Handles parsing of
