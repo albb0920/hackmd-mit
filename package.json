@@ -79,7 +79,7 @@
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0",
     "markdown-pdf": "^9.0.0",
-    "mathjax": "~2.7.0",
+    "mathjax": "2.7.5",
     "mattermost-redux": "~5.14.0",
     "mermaid": "~8.2.6",
     "method-override": "^2.3.7",
