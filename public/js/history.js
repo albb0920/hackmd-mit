@@ -302,10 +302,11 @@ function parseToHistory (list, notehistory, callback) {
       // prevent XSS
       notehistory[i].text = htmlEntities.encode(notehistory[i].text)
 
-      notehistory[i].tags =
-        (notehistory[i].tags && notehistory[i].tags.length > 0)
-          ? htmlEntities.encode(notehistory[i].tags).split(',')
-          : []
+      if (notehistory[i].tags && notehistory[i].tags.length > 0) {
+        notehistory[i].tags = notehistory[i].tags.map((tag) => htmlEntities.encode(tag))
+      } else {
+        notehistory[i].tags = []
+      }
 
       // add to list
       if (notehistory[i].id && list.get('id', notehistory[i].id).length === 0) { list.add(notehistory[i]) }
