@@ -207,7 +207,7 @@ module.exports = {
       'script-loader!codemirrorInlineAttachment',
       'script-loader!ot',
       'flowchart.js',
-      'js-sequence-diagrams',
+      'imports-loader?Raphael=raphael!js-sequence-diagrams',
       'expose-loader?RevealMarkdown!reveal-markdown',
       path.join(__dirname, 'public/js/google-drive-upload.js'),
       path.join(__dirname, 'public/js/google-drive-picker.js'),
@@ -262,7 +262,7 @@ module.exports = {
       'script-loader!codemirrorInlineAttachment',
       'script-loader!ot',
       'flowchart.js',
-      'js-sequence-diagrams',
+      'imports-loader?Raphael=raphael!js-sequence-diagrams',
       'expose-loader?Viz!viz.js',
       'script-loader!abcjs',
       'expose-loader?io!socket.io-client',
@@ -276,7 +276,7 @@ module.exports = {
       'regenerator-runtime/runtime',
       'expose-loader?filterXSS!xss',
       'flowchart.js',
-      'js-sequence-diagrams',
+      'imports-loader?Raphael=raphael!js-sequence-diagrams',
       'expose-loader?RevealMarkdown!reveal-markdown',
       path.join(__dirname, 'public/js/pretty.js')
     ],
@@ -302,7 +302,7 @@ module.exports = {
       'expose-loader?filterXSS!xss',
       'script-loader!gist-embed',
       'flowchart.js',
-      'js-sequence-diagrams',
+      'imports-loader?Raphael=raphael!js-sequence-diagrams',
       'expose-loader?Viz!viz.js',
       'script-loader!abcjs',
       'expose-loader?RevealMarkdown!reveal-markdown',
@@ -314,7 +314,7 @@ module.exports = {
       'bootstrap-tooltip',
       'expose-loader?filterXSS!xss',
       'flowchart.js',
-      'js-sequence-diagrams',
+      'imports-loader?Raphael=raphael!js-sequence-diagrams',
       'expose-loader?RevealMarkdown!reveal-markdown',
       path.join(__dirname, 'public/js/slide.js')
     ],
@@ -345,7 +345,7 @@ module.exports = {
       'expose-loader?filterXSS!xss',
       'script-loader!gist-embed',
       'flowchart.js',
-      'js-sequence-diagrams',
+      'imports-loader?Raphael=raphael!js-sequence-diagrams',
       'expose-loader?Viz!viz.js',
       'script-loader!abcjs',
       'headjs',
@@ -377,7 +377,7 @@ module.exports = {
       headjs: 'reveal.js/lib/js/head.min.js',
       'reveal-markdown': path.join(__dirname, 'public/js/reveal-markdown.js'),
       abcjs: path.join(__dirname, 'public/vendor/abcjs_basic_3.1.1-min.js'),
-      'js-sequence-diagrams': 'imports-loader?Raphael=raphael!@hackmd/js-sequence-diagrams/build/main.js'
+      'js-sequence-diagrams': path.join(__dirname, 'node_modules/@hackmd/js-sequence-diagrams/build/main.js')
     }
   },
 
