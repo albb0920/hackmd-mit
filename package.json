@@ -108,7 +108,7 @@
     "raphael": "git+https://github.com/dmitrybaranovskiy/raphael",
     "request": "^2.79.0",
     "reveal.js": "~3.7.0",
-    "scrypt": "^6.0.3",
+    "scrypt-kdf": "^2.0.1",
     "select2": "^3.5.2-browserify",
     "sequelize": "^5.18.4",
     "sequelize-cli": "^5.5.1",
