@@ -74,11 +74,13 @@ app.use(morgan('combined', {
 }))
 
 // socket io
-var io = require('socket.io')(server)
-io.engine.ws = new (require('uws').Server)({
-  noServer: true,
-  perMessageDeflate: false
-})
+var io = require('socket.io')(
+  server,
+  {
+    pingInterval: config.heartbeatinterval,
+    pingTimeout: config.heartbeattimeout
+  }
+)
 
 // others
 var realtime = require('./lib/realtime.js')
@@ -192,9 +194,7 @@ io.use(passportSocketIo.authorize({
   success: realtime.onAuthorizeSuccess,
   fail: realtime.onAuthorizeFail
 }))
-// socket.io heartbeat
-io.set('heartbeat interval', config.heartbeatinterval)
-io.set('heartbeat timeout', config.heartbeattimeout)
+
 // socket.io connection
 io.sockets.on('connection', realtime.connection)
 
