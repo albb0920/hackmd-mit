@@ -74,11 +74,13 @@ app.use(morgan('combined', {
 }))
 
 // socket io
-var io = require('socket.io')(server)
-io.engine.ws = new (require('uws').Server)({
-  noServer: true,
-  perMessageDeflate: false
-})
+var io = require('socket.io')(
+  server,
+  {
+    pingInterval: config.heartbeatinterval,
+    pingTimeout: config.heartbeattimeout
+  }
+)
 
 // others
 var realtime = require('./lib/realtime.js')
@@ -192,9 +194,7 @@ io.use(passportSocketIo.authorize({
   success: realtime.onAuthorizeSuccess,
   fail: realtime.onAuthorizeFail
 }))
-// socket.io heartbeat
-io.set('heartbeat interval', config.heartbeatinterval)
-io.set('heartbeat timeout', config.heartbeattimeout)
+
 // socket.io connection
 io.sockets.on('connection', realtime.connection)
 
@@ -232,15 +232,17 @@ process.on('uncaughtException', function (err) {
 function handleTermSignals () {
   logger.info('hackmd has been killed by signal, try to exit gracefully...')
   realtime.maintenance = true
+
   // disconnect all socket.io clients
-  Object.keys(io.sockets.sockets).forEach(function (key) {
-    var socket = io.sockets.sockets[key]
+  io.sockets.sockets.forEach(function (socket) {
     // notify client server going into maintenance status
     socket.emit('maintenance')
+
     setTimeout(function () {
       socket.disconnect(true)
     }, 0)
   })
+
   var checkCleanTimer = setInterval(function () {
     if (realtime.isReady()) {
       models.Revision.checkAllNotesRevision(function (err, notes) {
