@@ -352,7 +352,9 @@ module.exports = {
       'expose-loader?Reveal!reveal.js',
       'expose-loader?RevealMarkdown!reveal-markdown',
       path.join(__dirname, 'public/js/slide.js')
-    ]
+    ],
+
+    htmlExport: path.join(__dirname, 'public/js/htmlExport.js')
   },
 
   output: {

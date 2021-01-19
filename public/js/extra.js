@@ -675,7 +675,7 @@ export function exportToHTML (view) {
   const tocAffix = $('#ui-toc-affix').clone()
   tocAffix.find('*').removeClass('active').find("a[href^='#'][smoothhashscroll]").removeAttr('smoothhashscroll')
   // generate html via template
-  $.get(`${serverurl}/build/html.min.css`, css => {
+  $.get(`${serverurl}/build/htmlExport.css`, css => {
     $.get(`${serverurl}/views/html.hbs`, data => {
       const template = window.Handlebars.compile(data)
       const context = {
